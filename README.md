@@ -37,6 +37,4 @@ npm run start:sandbox
 
 - [制作事例と技術資料](https://ak2lab.github.io/)
 - [公式サイト](https://ak2lab.com/)
-- [ポートフォリオ](https://portfolio.ak2lab.com/)
-- [作品紹介](https://showcase.ak2lab.com/)
 - [X](https://x.com/aidev_ak)
