@@ -5,6 +5,7 @@ Eleventyを土台に、YAMLでページ構成とCanvas背景を組み立てる�
 ## 公開先
 
 - [デモを見る](https://ak2engine.ak2lab.com/)
+- [制作事例の説明](https://ak2lab.github.io/cases/ak2-engine/)
 
 区分: 自主制作・実用
 
@@ -34,6 +35,7 @@ npm run start:sandbox
 
 ## AK²Lab
 
+- [制作事例と技術資料](https://ak2lab.github.io/)
 - [公式サイト](https://ak2lab.com/)
 - [ポートフォリオ](https://portfolio.ak2lab.com/)
 - [作品紹介](https://showcase.ak2lab.com/)
