@@ -1,0 +1,50 @@
+{# ================================================================
+   layout-hero-particle.njk
+   テキストパーティクル ヒーローセクション
+   ================================================================
+   使い方:
+     {% from "layout-hero-particle/layout-hero-particle.njk" import heroParticle %}
+     {{ heroParticle(text="AK²Lab", subtitle="INTERACTIVE ECOSYSTEM") }}
+   ================================================================
+   パラメーター一覧:
+     text       : パーティクル化するテキスト（必須）
+     subtitle   : 上部の小見出し英字テキスト           (default: "")
+     color      : パーティクル色（hex / rgb / var()）  (default: "")  ← 空欄時は --color-primary を使用
+     fontSize   : 非表示テキストのフォントサイズ       (default: "15vw")  ← vw / px / em 可
+     fontWeight : フォントウェイト                     (default: "700")
+     fontFamily : フォントファミリー（省略時は CSS 継承） (default: "")
+     height     : セクション高さ                       (default: "100vh")
+     bg         : 背景色                               (default: "#0b0b0f")
+     extraClass : section への追加クラス               (default: "")
+
+   マウスが触れるとパーティクルが反発し、離れると元の形に戻ります。
+   カスタムカーソルエリア (data-cursor-area) として機能します。
+   ================================================================ #}
+
+{# ---- テキストパーティクル ヒーロー --------------------------------
+   ※ 1ページに複数配置する場合は id パラメーターを一意にしてください
+   id パラメーターを省略した場合は "main" になります
+   ------------------------------------------------------------ #}
+{% macro heroParticle(text, subtitle="", color="", fontSize="15vw", fontWeight="700", fontFamily="", height="100vh", bg="#0b0b0f", extraClass="", id="main") %}
+<section
+  class="ak2-hero-particle{% if extraClass %} {{ extraClass }}{% endif %}"
+  style="height: {{ height }}; background: {{ bg }};"
+  data-cursor-area>
+  <canvas
+    class="ak2-hero-particle__canvas"
+    id="ak2-hpc-{{ id }}"
+    data-particle-canvas
+    data-color="{{ color }}"
+    aria-hidden="true"></canvas>
+  <div class="ak2-hero-particle__content">
+    {% if subtitle %}
+    <p class="ak2-hero-particle__subtitle">{{ subtitle }}</p>
+    {% endif %}
+    <h2
+      class="ak2-hero-particle__title"
+      id="ak2-hpt-{{ id }}"
+      style="opacity: 0; font-size: {{ fontSize }}; font-weight: {{ fontWeight }};{% if fontFamily %} font-family: {{ fontFamily }};{% endif %}"
+      aria-label="{{ text }}">{{ text }}</h2>
+  </div>
+</section>
+{%- endmacro %}

@@ -1,0 +1,56 @@
+{# ── article section ─────────────────────────────────────────────────────
+   ドキュメント・コンセプトページ用セクション。
+   パンくずリスト・カテゴリラベル・タイトル・リード文のヒーローエリアと、
+   Markdown 本文エリア（TOC 自動生成付き）をセットで出力する。
+
+   主な用途: docs ページ・コンセプト解説・プラグイン説明記事
+             1ページに1つだけ使用する（本文を全部ラップするため）。
+
+   出力 HTML 構造:
+     <main class="article-page">
+       <div class="article-page__hero">
+         <div class="container">
+           <div class="breadcrumb">Sandbox › {{ doc_group }}</div>
+           <div class="article-page__category">{{ doc_group }}</div>
+           <h1 class="article-page__title">{{ title }}</h1>
+           <p class="article-page__lead">{{ lead }}</p>
+         </div>
+       </div>
+       <div class="article-page__body">
+         <div class="container">
+           <div class="article-page__toc"><!-- H2以上から自動生成（toc フィルター） --></div>
+           <div class="prose">{{ content }}</div>
+         </div>
+       </div>
+     </main>
+
+   セクションパラメータ:
+     section.doc_group : カテゴリーラベル（モノスペース・大文字。省略可）
+     section.title    : 記事タイトル（省略時はページ front-matter の title を使用）
+     section.lead     : タイトル下のリード文（省略可）
+   ──────────────────────────────────────────────────────────────────── #}
+<main class="article-page">
+  <div class="article-page__hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Sandbox</a>
+        <span class="breadcrumb__sep">›</span>
+        <span>{{ section.doc_group | default("Article") }}</span>
+      </div>
+      {% if section.doc_group %}<div class="article-page__category">{{ section.doc_group }}</div>{% endif %}
+      <h1 class="article-page__title">{{ section.title or title }}</h1>
+      {% if section.lead %}<p class="article-page__lead">{{ section.lead }}</p>{% endif %}
+    </div>
+  </div>
+  <div class="article-page__body">
+    <div class="container">
+      {% set tocHtml = content | toc %}
+      {% if tocHtml %}
+      <div class="article-page__toc">{{ tocHtml | safe }}</div>
+      {% endif %}
+      <div class="prose">
+        {{ content | safe }}
+      </div>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,45 @@
+{# ── stat-grid section ────────────────────────────────────────────────────
+   ガラスカードのグリッドを出力する。
+   カードはリンクなしの情報表示用。
+   タイトルと本文テキストで構成。本文には HTML タグが使用可能。
+
+   主な用途: プラグイン仕様・統計数値・機能リスト
+
+   出力 HTML 構造:
+     <section class="section [sectionClass]">
+       <div class="container">
+         <!-- sectionHeader（heading / subheading） -->
+         <div class="card-grid">
+           <div class="glass-card [extraClass]">
+             <div class="card-title [titleClass]">{{ title }}</div>
+             <p class="card-text">{{ text }}</p>
+           </div>
+           <!-- items の数だけ繰り返し -->
+         </div>
+       </div>
+     </section>
+
+   セクションパラメータ:
+     section.sectionClass : 外側 <section> の CSS クラス（省略時: "section--white"）
+     section.heading    : セクション英語ラベル（sectionHeader 上段）
+     section.subheading : セクション日本語見出し（sectionHeader 下段）
+     section.items[]    : カード配列
+       .title           : カードタイトル
+       .text            : カード本文（HTML タグ使用可）
+       .titleClass      : card-title への追加 CSS クラス（省略可）
+       .extraClass      : glass-card への追加 CSS クラス（省略可）
+   ──────────────────────────────────────────────────────────────────── #}
+{% from "components/macros.njk" import sectionHeader %}
+<section class="section {{ section.sectionClass or 'section--white' }}">
+  <div class="container">
+    {{ sectionHeader(section.heading, section.subheading, true) }}
+    <div class="card-grid">
+      {% for item in section.items %}
+      <div class="glass-card{% if item.extraClass %} {{ item.extraClass }}{% endif %}">
+        <div class="card-title{% if item.titleClass %} {{ item.titleClass }}{% endif %}">{{ item.title }}</div>
+        <p class="card-text">{{ item.text | safe }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

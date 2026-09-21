@@ -1,0 +1,340 @@
+/* ================================================================
+   layout-header-nav.css
+   AK² グローバルヘッダーナビゲーション
+   ================================================================ */
+
+/* ── Custom Properties (AK² vars → nav vars) ─────────────────── */
+
+:root {
+  --nav-bg:        var(--color-white);
+  --nav-text:      var(--color-dark);
+  --nav-sub:       var(--color-text-light);
+  --nav-accent:    var(--color-primary);
+  --nav-icon:      var(--color-dark);
+  --nav-drawer-bg: var(--color-white);
+}
+
+/* ── Header ──────────────────────────────────────────────────── */
+
+.ak2-nav-header {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: var(--header-height);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 max(24px, calc((100% - var(--container-width)) / 2));
+  gap: 20px;
+  z-index: var(--z-header);
+  background: color-mix(in srgb, var(--nav-bg) 80%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid color-mix(in srgb, var(--nav-text) 10%, transparent);
+  transition: padding-right 0.3s ease, height 0.4s ease, background 0.4s ease,
+              box-shadow 0.4s ease;
+}
+.ak2-nav-header.is-scrolled {
+  background: color-mix(in srgb, var(--nav-bg) 97%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  height: 70px;
+}
+.ak2-nav-header.is-transparent {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: none;
+}
+.ak2-nav-header.nav-bg-solid {
+  background: var(--nav-bg);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.ak2-nav-header.nav-bg-solid.is-scrolled {
+  background: var(--nav-bg);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Header: item order (brand / global / toggle / search) ────────────── */
+
+.ak2-nav-header .ak2-nav-brand       { order: 1; flex-grow: 1; }
+.ak2-nav-header #ak2-nav-global      { order: 2; }
+.ak2-nav-header [data-search-trigger]{ order: 3; margin-left: 10px; }
+.ak2-nav-header #ak2-nav-toggle-wrap { order: 4; }
+
+/* Toggle-left variant: toggle | search | brand | global */
+.ak2-nav-header.toggle-pos-left .ak2-nav-brand       { order: 3; }
+.ak2-nav-header.toggle-pos-left #ak2-nav-toggle-wrap { order: 1; }
+.ak2-nav-header.toggle-pos-left [data-search-trigger]{ order: 2; margin-right: 15px; }
+.ak2-nav-header.toggle-pos-left #ak2-nav-global      { order: 4; margin-left: auto; }
+
+/* ── Brand ───────────────────────────────────────────────────── */
+
+.ak2-nav-brand {
+  display: flex; align-items: center; gap: 12px; text-decoration: none;
+}
+.ak2-nav-brand svg,
+.ak2-nav-brand img { height: 40px; width: 40px; flex-shrink: 0; transition: transform 0.3s ease; }
+.ak2-nav-brand:hover svg,
+.ak2-nav-brand:hover img { transform: scale(1.05); }
+.ak2-nav-brand__text { display: flex; align-items: baseline; gap: 12px; }
+.ak2-nav-brand__name {
+  font-family: var(--font-english); font-weight: 700;
+  color: var(--nav-text); font-size: 1.3rem; letter-spacing: 0.05em; line-height: 1;
+}
+.ak2-nav-brand__sub {
+  font-size: 0.8rem; color: var(--nav-sub); font-weight: 400; line-height: 1;
+}
+
+/* ── Global Nav (base) ───────────────────────────────────────── */
+
+.ak2-nav-global {
+  display: flex; align-items: center; gap: 30px; position: relative;
+}
+.ak2-nav-global a {
+  color: var(--nav-sub); text-decoration: none;
+  font-family: var(--font-english);
+  font-size: 0.85rem; letter-spacing: 0.06em; font-weight: 500;
+  padding: 8px 12px; transition: color 0.3s; position: relative; z-index: 1;
+}
+.ak2-nav-global a:hover,
+.ak2-nav-global a.is-active { color: var(--nav-text); }
+
+/* Underline indicator */
+.ak2-nav-indicator--line {
+  position: absolute; bottom: 0; left: 0; height: 2px;
+  background: var(--nav-accent);
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  pointer-events: none; opacity: 0;
+}
+
+/* Pill indicator */
+.ak2-nav-indicator--pill {
+  position: absolute; top: 0; left: 0; height: 100%;
+  background: color-mix(in srgb, var(--nav-accent) 15%, transparent);
+  border-radius: 20px;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  pointer-events: none; opacity: 0;
+}
+
+/* Bracket variant */
+.ak2-nav-global--bracket a { padding: 8px 24px; transition: all 0.3s ease; }
+.ak2-nav-global--bracket a::before,
+.ak2-nav-global--bracket a::after {
+  position: absolute; opacity: 0; color: var(--nav-accent);
+  transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+}
+.ak2-nav-global--bracket a::before { content: '['; left: 8px; transform: translateX(5px); }
+.ak2-nav-global--bracket a::after  { content: ']'; right: 8px; transform: translateX(-5px); }
+.ak2-nav-global--bracket a:hover::before,
+.ak2-nav-global--bracket a.is-active::before { opacity: 1; transform: translateX(0); }
+.ak2-nav-global--bracket a:hover::after,
+.ak2-nav-global--bracket a.is-active::after  { opacity: 1; transform: translateX(0); }
+
+/* Shift variant */
+.ak2-nav-global--shift a {
+  overflow: hidden; display: inline-flex; flex-direction: column;
+  height: 20px; padding: 0 12px;
+}
+.ak2-nav-global--shift a span { transition: transform 0.4s cubic-bezier(0.8, 0, 0.2, 1); line-height: 20px; }
+.ak2-nav-global--shift a::after {
+  content: attr(data-text); color: var(--nav-accent); position: absolute;
+  top: 100%; left: 0; width: 100%; text-align: center; line-height: 20px;
+  transition: transform 0.4s cubic-bezier(0.8, 0, 0.2, 1);
+}
+.ak2-nav-global--shift a:hover span   { transform: translateY(-100%); }
+.ak2-nav-global--shift a:hover::after { transform: translateY(-100%); }
+
+/* Dot variant */
+.ak2-nav-global--dot a::before {
+  content: ''; position: absolute; top: -5px; left: 50%;
+  transform: translateX(-50%) scale(0);
+  width: 4px; height: 4px; border-radius: 50%; background: var(--nav-accent);
+  transition: transform 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+}
+.ak2-nav-global--dot a:hover::before,
+.ak2-nav-global--dot a.is-active::before { transform: translateX(-50%) scale(1); }
+
+/* ── Toggle Button ───────────────────────────────────────────── */
+
+#ak2-nav-toggle-wrap {
+  display: flex; justify-content: center; align-items: center;
+  width: 48px; height: 48px;
+  z-index: calc(var(--z-header) + 1);
+}
+
+.ak2-nav-toggle {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: color-mix(in srgb, var(--nav-icon) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--nav-icon) 10%, transparent);
+  position: relative; display: flex; justify-content: center; align-items: center;
+  cursor: pointer; outline: none; padding: 0;
+  transition: background 0.3s, border-color 0.3s;
+}
+.ak2-nav-toggle:hover { background: color-mix(in srgb, var(--nav-icon) 10%, transparent); }
+
+.ak2-nav-toggle-lines { position: relative; width: 30px; height: 20px; }
+
+/* 1. Geometric Morph */
+.ak2-nav-toggle--geometric span {
+  display: block; position: absolute; width: 100%; height: 3px;
+  background-color: var(--nav-icon); border-radius: 3px; left: 0;
+  transition: transform 0.4s cubic-bezier(0.8, 0, 0.2, 1),
+              opacity 0.4s cubic-bezier(0.8, 0, 0.2, 1),
+              top 0.4s cubic-bezier(0.8, 0, 0.2, 1),
+              background-color 0.3s;
+}
+.ak2-nav-toggle--geometric span:nth-child(1) { top: 0; }
+.ak2-nav-toggle--geometric span:nth-child(2) { top: 8.5px; }
+.ak2-nav-toggle--geometric span:nth-child(3) { top: 17px; }
+.ak2-nav-toggle.is-active .ak2-nav-toggle--geometric span:nth-child(1) { top: 8.5px; transform: rotate(45deg); background-color: var(--nav-accent); }
+.ak2-nav-toggle.is-active .ak2-nav-toggle--geometric span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.ak2-nav-toggle.is-active .ak2-nav-toggle--geometric span:nth-child(3) { top: 8.5px; transform: rotate(-45deg); background-color: var(--nav-accent); }
+
+/* 2. Magnetic Elastic */
+.ak2-nav-toggle--magnetic-wrapper { pointer-events: all; }
+.ak2-nav-toggle--magnetic {
+  width: 30px; height: 20px; position: relative;
+  pointer-events: none; transition: transform 0.1s linear;
+}
+.ak2-nav-toggle--magnetic span {
+  display: block; position: absolute; width: 100%; height: 3px;
+  background-color: var(--nav-icon); border-radius: 3px; left: 0;
+  transition: all 0.6s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+}
+.ak2-nav-toggle--magnetic span:nth-child(1) { top: 0; }
+.ak2-nav-toggle--magnetic span:nth-child(2) { top: 8.5px; }
+.ak2-nav-toggle--magnetic span:nth-child(3) { top: 17px; }
+.ak2-nav-toggle--magnetic-wrapper.is-active .ak2-nav-toggle--magnetic span:nth-child(1) { top: 8.5px; transform: rotate(135deg); background-color: var(--nav-accent); }
+.ak2-nav-toggle--magnetic-wrapper.is-active .ak2-nav-toggle--magnetic span:nth-child(2) { opacity: 0; transform: rotate(90deg) scale(0); }
+.ak2-nav-toggle--magnetic-wrapper.is-active .ak2-nav-toggle--magnetic span:nth-child(3) { top: 8.5px; transform: rotate(-135deg); background-color: var(--nav-accent); }
+
+/* 3. Liquid Filter (Gooey) */
+.ak2-nav-toggle--liquid {
+  filter: url('#ak2-nav-gooey'); width: 30px; height: 20px; position: relative;
+}
+.ak2-nav-toggle--liquid span {
+  display: block; position: absolute; width: 100%; height: 3px;
+  background-color: var(--nav-icon); border-radius: 3px; left: 0;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ak2-nav-toggle--liquid span:nth-child(1) { top: 0; }
+.ak2-nav-toggle--liquid span:nth-child(2) { top: 8.5px; }
+.ak2-nav-toggle--liquid span:nth-child(3) { top: 17px; }
+.ak2-nav-toggle.is-active .ak2-nav-toggle--liquid span:nth-child(1) { top: 8.5px; transform: rotate(45deg); background-color: var(--nav-accent); }
+.ak2-nav-toggle.is-active .ak2-nav-toggle--liquid span:nth-child(2) { transform: scaleX(0); opacity: 0; }
+.ak2-nav-toggle.is-active .ak2-nav-toggle--liquid span:nth-child(3) { top: 8.5px; transform: rotate(-45deg); background-color: var(--nav-accent); }
+
+/* 4. Kinetic Particle (Hybrid) */
+#ak2-nav-hybrid-wrap {
+  position: relative; width: 48px; height: 48px;
+}
+#ak2-nav-hybrid-wrap .ak2-nav-toggle {
+  position: absolute; top: 0; left: 0; z-index: 2;
+  transition: opacity 0.2s, background 0.3s, border-color 0.3s;
+}
+#ak2-nav-particle-canvas {
+  position: absolute; top: -36px; left: -36px;
+  width: 120px; height: 120px; z-index: 1; pointer-events: none;
+}
+
+/* ── Drawer (base) ───────────────────────────────────────────── */
+
+.ak2-nav-drawer {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+  background: var(--nav-drawer-bg);
+  z-index: calc(var(--z-header) - 1);
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  pointer-events: none;
+}
+.ak2-nav-drawer ul { list-style: none; text-align: center; }
+.ak2-nav-drawer li { margin: 20px 0; overflow: hidden; }
+.ak2-nav-drawer a {
+  display: inline-block; color: var(--nav-text); text-decoration: none;
+  font-family: var(--font-english);
+  font-size: 36px; font-weight: 300; letter-spacing: 4px;
+  transition: color 0.3s;
+}
+.ak2-nav-drawer a:hover,
+.ak2-nav-drawer a.is-active { color: var(--nav-accent); }
+
+/* Circular Reveal (default: right-side origin) */
+/* 48px = モバイル padding 24px + ボタン半幅 24px */
+.ak2-nav-drawer--circular {
+  clip-path: circle(0% at calc(100% - 48px) 40px);
+  transition: clip-path 0.8s cubic-bezier(0.7, 0, 0.2, 1);
+}
+.ak2-nav-drawer--circular.is-open {
+  clip-path: circle(150% at calc(100% - 48px) 40px);
+  pointer-events: auto;
+}
+/* Left-side origin */
+body.ak2-nav-toggle-pos-left .ak2-nav-drawer--circular         { clip-path: circle(0% at 48px 40px); }
+body.ak2-nav-toggle-pos-left .ak2-nav-drawer--circular.is-open { clip-path: circle(150% at 48px 40px); }
+
+.ak2-nav-drawer--circular a { transform: translateY(100%); opacity: 0; transition: transform 0.6s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.6s ease; }
+.ak2-nav-drawer--circular.is-open a { transform: translateY(0); opacity: 1; }
+.ak2-nav-drawer--circular.is-open li:nth-child(1) a { transition-delay: 0.20s; }
+.ak2-nav-drawer--circular.is-open li:nth-child(2) a { transition-delay: 0.27s; }
+.ak2-nav-drawer--circular.is-open li:nth-child(3) a { transition-delay: 0.34s; }
+.ak2-nav-drawer--circular.is-open li:nth-child(4) a { transition-delay: 0.41s; }
+.ak2-nav-drawer--circular.is-open li:nth-child(5) a { transition-delay: 0.48s; }
+.ak2-nav-drawer--circular.is-open li:nth-child(6) a { transition-delay: 0.55s; }
+.ak2-nav-drawer--circular.is-open li:nth-child(7) a { transition-delay: 0.62s; }
+.ak2-nav-drawer--circular.is-open li:nth-child(8) a { transition-delay: 0.69s; }
+
+/* Slide Down */
+.ak2-nav-drawer--slide-down { transform: translateY(-100%); transition: transform 0.6s cubic-bezier(0.8, 0, 0.2, 1); }
+.ak2-nav-drawer--slide-down.is-open { transform: translateY(0); pointer-events: auto; }
+.ak2-nav-drawer--slide-down a { transform: translateY(-50px); opacity: 0; transition: transform 0.5s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.5s ease; }
+.ak2-nav-drawer--slide-down.is-open a { transform: translateY(0); opacity: 1; }
+.ak2-nav-drawer--slide-down.is-open li:nth-child(1) a { transition-delay: 0.30s; }
+.ak2-nav-drawer--slide-down.is-open li:nth-child(2) a { transition-delay: 0.37s; }
+.ak2-nav-drawer--slide-down.is-open li:nth-child(3) a { transition-delay: 0.44s; }
+.ak2-nav-drawer--slide-down.is-open li:nth-child(4) a { transition-delay: 0.51s; }
+.ak2-nav-drawer--slide-down.is-open li:nth-child(5) a { transition-delay: 0.58s; }
+.ak2-nav-drawer--slide-down.is-open li:nth-child(6) a { transition-delay: 0.65s; }
+.ak2-nav-drawer--slide-down.is-open li:nth-child(7) a { transition-delay: 0.72s; }
+.ak2-nav-drawer--slide-down.is-open li:nth-child(8) a { transition-delay: 0.79s; }
+
+/* Slide Up */
+.ak2-nav-drawer--slide-up { transform: translateY(100%); transition: transform 0.6s cubic-bezier(0.8, 0, 0.2, 1); }
+.ak2-nav-drawer--slide-up.is-open { transform: translateY(0); pointer-events: auto; }
+.ak2-nav-drawer--slide-up a { transform: translateY(50px); opacity: 0; transition: transform 0.5s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.5s ease; }
+.ak2-nav-drawer--slide-up.is-open a { transform: translateY(0); opacity: 1; }
+.ak2-nav-drawer--slide-up.is-open li:nth-child(1) a { transition-delay: 0.30s; }
+.ak2-nav-drawer--slide-up.is-open li:nth-child(2) a { transition-delay: 0.37s; }
+.ak2-nav-drawer--slide-up.is-open li:nth-child(3) a { transition-delay: 0.44s; }
+.ak2-nav-drawer--slide-up.is-open li:nth-child(4) a { transition-delay: 0.51s; }
+.ak2-nav-drawer--slide-up.is-open li:nth-child(5) a { transition-delay: 0.58s; }
+.ak2-nav-drawer--slide-up.is-open li:nth-child(6) a { transition-delay: 0.65s; }
+.ak2-nav-drawer--slide-up.is-open li:nth-child(7) a { transition-delay: 0.72s; }
+.ak2-nav-drawer--slide-up.is-open li:nth-child(8) a { transition-delay: 0.79s; }
+
+/* Glass Scale Blur */
+.ak2-nav-drawer--glass {
+  background: color-mix(in srgb, var(--nav-drawer-bg) 70%, transparent);
+  backdrop-filter: blur(20px);
+  opacity: 0; transition: opacity 0.5s ease;
+}
+.ak2-nav-drawer--glass.is-open { opacity: 1; pointer-events: auto; }
+.ak2-nav-drawer--glass a { transform: scale(0.8) translateZ(0); opacity: 0; transition: transform 0.7s cubic-bezier(0.1, 1, 0.2, 1), opacity 0.7s ease; }
+.ak2-nav-drawer--glass.is-open a { transform: scale(1) translateZ(0); opacity: 1; }
+.ak2-nav-drawer--glass.is-open li:nth-child(1) a { transition-delay: 0.10s; }
+.ak2-nav-drawer--glass.is-open li:nth-child(2) a { transition-delay: 0.17s; }
+.ak2-nav-drawer--glass.is-open li:nth-child(3) a { transition-delay: 0.24s; }
+.ak2-nav-drawer--glass.is-open li:nth-child(4) a { transition-delay: 0.31s; }
+.ak2-nav-drawer--glass.is-open li:nth-child(5) a { transition-delay: 0.38s; }
+.ak2-nav-drawer--glass.is-open li:nth-child(6) a { transition-delay: 0.45s; }
+.ak2-nav-drawer--glass.is-open li:nth-child(7) a { transition-delay: 0.52s; }
+.ak2-nav-drawer--glass.is-open li:nth-child(8) a { transition-delay: 0.59s; }
+
+/* ── Responsive ──────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .ak2-nav-header    { padding: 0 24px; }
+  .ak2-nav-global    { display: none !important; }
+  #ak2-nav-toggle-wrap { display: flex !important; }
+}
+@media (min-width: 769px) {
+  .ak2-nav-global    { display: flex !important; }
+  #ak2-nav-toggle-wrap { display: none !important; }
+}

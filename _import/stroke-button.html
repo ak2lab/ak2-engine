@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stroke Draw Button — GSAP 3</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    background: #fafaf8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 52px;
+  }
+  .label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.22);
+  }
+  .demo-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 32px;
+  }
+</style>
+</head>
+<body>
+
+<p class="label">Stroke Draw Button — GSAP 3</p>
+<div class="demo-row" id="demo"></div>
+
+<script>
+/**
+ * createStrokeButton(text, options)
+ *
+ * ホバー時にSVGのstrokeが1本の線でスルスルと描画されるミニマルボタン。
+ *
+ * @param {string}  text
+ * @param {object}  [options]
+ * @param {string}  [options.strokeColor]   ホバー時ストローク色   (default: '#111111')
+ * @param {string}  [options.borderColor]   初期枠線色             (default: rgba of strokeColor, 0.18)
+ * @param {string}  [options.textColor]     テキスト色             (default: '#111111')
+ * @param {string}  [options.fontFamily]    フォント               (default: "'DM Sans', sans-serif")
+ * @param {number}  [options.strokeWidth]   線の太さ px            (default: 1.2)
+ * @param {number}  [options.radius]        角丸 px                (default: 3)
+ * @param {number}  [options.duration]      描画時間 秒            (default: 0.55)
+ * @param {boolean} [options.float]         浮遊アニメーション     (default: false)
+ * @returns {HTMLElement}
+ */
+function createStrokeButton(text, options = {}) {
+  const {
+    strokeColor = '#111111',
+    borderColor = null,
+    textColor   = '#111111',
+    fontFamily  = "'DM Sans', sans-serif",
+    strokeWidth = 1.2,
+    radius      = 3,
+    duration    = 0.55,
+    float       = false,
+  } = options;
+
+  // borderColor 未指定なら strokeColor を低透明度で使う
+  const resolvedBorderColor = borderColor ?? (() => {
+    // hex → rgba
+    const h = strokeColor.replace('#','');
+    const r = parseInt(h.slice(0,2),16);
+    const g = parseInt(h.slice(2,4),16);
+    const b = parseInt(h.slice(4,6),16);
+    return `rgba(${r},${g},${b},0.18)`;
+  })();
+
+  /* ── テキスト幅計測 ──────────────────────────────────────── */
+  const probe = document.createElement('span');
+  Object.assign(probe.style, {
+    position: 'absolute', visibility: 'hidden', whiteSpace: 'nowrap',
+    fontSize: '13px', fontWeight: '300', letterSpacing: '0.18em',
+    textTransform: 'uppercase', fontFamily,
+  });
+  probe.textContent = text;
+  document.body.appendChild(probe);
+  const textW = probe.getBoundingClientRect().width;
+  document.body.removeChild(probe);
+
+  const padX = 32, padY = 16;
+  const W = Math.ceil(textW + padX * 2);
+  const H = 46;
+  const r = radius;
+
+  /* ── ラッパー ─────────────────────────────────────────────── */
+  const wrap = document.createElement('div');
+  Object.assign(wrap.style, {
+    position: 'relative',
+    display:  'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width:  `${W}px`,
+    height: `${H}px`,
+    cursor: 'pointer',
+    userSelect: 'none',
+    WebkitTapHighlightColor: 'transparent',
+  });
+
+  /* ── SVG ──────────────────────────────────────────────────── */
+  const ns  = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  Object.assign(svg.style, {
+    position: 'absolute',
+    inset: '0',
+    width: '100%',
+    height: '100%',
+    overflow: 'visible',
+    pointerEvents: 'none',
+  });
+
+  // 常時表示の薄い枠線 (ボタンであることを示す)
+  const borderRect = document.createElementNS(ns, 'rect');
+  borderRect.setAttribute('x',      strokeWidth / 2);
+  borderRect.setAttribute('y',      strokeWidth / 2);
+  borderRect.setAttribute('width',  W - strokeWidth);
+  borderRect.setAttribute('height', H - strokeWidth);
+  borderRect.setAttribute('rx',     r);
+  borderRect.setAttribute('ry',     r);
+  borderRect.setAttribute('fill',   'none');
+  borderRect.setAttribute('stroke', resolvedBorderColor);
+  borderRect.setAttribute('stroke-width', strokeWidth);
+  svg.appendChild(borderRect);
+
+  // ストローク描画パス (角丸四角形)
+  // ※ 描画開始点を上辺中央に置くことで、両方向に同時に伸びる演出を作る
+  const cx = W / 2;
+  const strokePath = document.createElementNS(ns, 'path');
+  const d = [
+    // 開始点: 上辺中央
+    `M ${cx} 0`,
+    // 上辺 → 右上角
+    `L ${W - r} 0`,
+    `Q ${W} 0 ${W} ${r}`,
+    // 右辺
+    `L ${W} ${H - r}`,
+    // 右下角
+    `Q ${W} ${H} ${W - r} ${H}`,
+    // 下辺
+    `L ${r} ${H}`,
+    // 左下角
+    `Q 0 ${H} 0 ${H - r}`,
+    // 左辺
+    `L 0 ${r}`,
+    // 左上角
+    `Q 0 0 ${r} 0`,
+    // 上辺左半分 → 開始点へ戻る
+    `L ${cx} 0`,
+  ].join(' ');
+
+  strokePath.setAttribute('d', d);
+  strokePath.setAttribute('fill', 'none');
+  strokePath.setAttribute('stroke', strokeColor);
+  strokePath.setAttribute('stroke-width', strokeWidth);
+  strokePath.setAttribute('stroke-linecap', 'round');
+  strokePath.setAttribute('stroke-linejoin', 'round');
+  svg.appendChild(strokePath);
+
+  /* ── テキスト ─────────────────────────────────────────────── */
+  const labelEl = document.createElement('span');
+  Object.assign(labelEl.style, {
+    position:      'relative',
+    zIndex:        '1',
+    fontFamily,
+    fontSize:      '13px',
+    fontWeight:    '300',
+    letterSpacing: '0.18em',
+    textTransform: 'uppercase',
+    color:         textColor,
+    whiteSpace:    'nowrap',
+    pointerEvents: 'none',
+    // GPU合成用
+    willChange: 'transform',
+  });
+  labelEl.textContent = text;
+
+  wrap.appendChild(svg);
+  wrap.appendChild(labelEl);
+
+  /* ── 浮遊アニメーション ──────────────────────────────────── */
+  if (float) {
+    gsap.to(wrap, {
+      y:        -5,
+      duration: 2.0 + Math.random() * 0.8,
+      ease:     'sine.inOut',
+      yoyo:     true,
+      repeat:   -1,
+    });
+  }
+
+  /* ── GSAP: stroke-dashoffset セットアップ ─────────────────── */
+  // DOMに追加されてからパス長を取得するため、非同期で初期化
+  let pathLen = 0;
+  let initialized = false;
+
+  function init() {
+    if (initialized) return;
+    initialized = true;
+    pathLen = strokePath.getTotalLength();
+    gsap.set(strokePath, {
+      strokeDasharray:  pathLen,
+      strokeDashoffset: pathLen, // 初期は非表示
+    });
+  }
+
+  /* ── イベント ─────────────────────────────────────────────── */
+  let hovered = false;
+
+  wrap.addEventListener('mouseenter', () => {
+    init();
+    hovered = true;
+    gsap.killTweensOf([strokePath, labelEl]);
+
+    // ① ストローク描画: dashoffset を 0 へ
+    gsap.to(strokePath, {
+      strokeDashoffset: 0,
+      duration,
+      ease: 'power3.inOut',
+    });
+
+    // ② テキスト浮き上がり
+    gsap.to(labelEl, {
+      y:        -3,
+      duration: duration * 0.7,
+      ease:     'power2.out',
+    });
+  });
+
+  wrap.addEventListener('mouseleave', () => {
+    hovered = false;
+    gsap.killTweensOf([strokePath, labelEl]);
+
+    // ストローク消去: 逆方向に退場 (末尾側から縮む)
+    gsap.to(strokePath, {
+      strokeDashoffset: -pathLen,
+      duration:         duration * 0.8,
+      ease:             'power3.inOut',
+      onComplete() {
+        // リセット (次のhoverに備える)
+        gsap.set(strokePath, { strokeDashoffset: pathLen });
+      },
+    });
+
+    // テキスト着地
+    gsap.to(labelEl, {
+      y:        0,
+      duration: duration * 0.5,
+      ease:     'power2.inOut',
+    });
+  });
+
+  // クリック: 軽いフラッシュ
+  wrap.addEventListener('mousedown', () => {
+    gsap.to(labelEl, { duration: 0.07, opacity: 0.45, ease: 'power2.in' });
+  });
+  wrap.addEventListener('mouseup', () => {
+    gsap.to(labelEl, { duration: 0.25, opacity: 1, ease: 'power2.out' });
+  });
+
+  return wrap;
+}
+
+/* ── デモ ─────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  const row = document.getElementById('demo');
+
+  const samples = [
+    { text: 'Get Started',  options: { float: true } },
+    { text: 'Learn More',   options: { strokeColor: '#0d9488', textColor: '#0d9488' } },
+    { text: 'Contact',      options: { strokeColor: '#6366f1', textColor: '#6366f1', radius: 24 } },
+    { text: 'はじめる',     options: { fontFamily: "'Noto Sans JP', sans-serif", strokeWidth: 1, float: true } },
+    { text: '詳しく見る',   options: {
+        fontFamily:  "'Noto Sans JP', sans-serif",
+        strokeColor: '#be185d',
+        textColor:   '#be185d',
+        radius:      24,
+        duration:    0.7,
+    }},
+    { text: 'Download',     options: { radius: 0, strokeWidth: 1.5, duration: 0.45 } },
+  ];
+
+  samples.forEach(({ text, options }) => {
+    row.appendChild(createStrokeButton(text, options));
+  });
+});
+</script>
+</body>
+</html>

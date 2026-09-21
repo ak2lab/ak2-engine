@@ -1,0 +1,37 @@
+{# ── card-philosophy section ─────────────────────────────────────────────
+   philosophyCard カードのグリッドを出力する。
+   大きな文字（char）+ 用語（term）+ 説明文（desc）の縦積みカード。
+
+   主な用途: 哲学・価値観・理念の紹介。
+
+   見た目のイメージ:
+     ┌──────────────────────────────────┐
+     │  [section-header: heading / subheading]                            │
+     │  ┌──────┐  ┌──────┐  ┌──────┐              │
+     │  │  A         │  │  K         │  │  2         │  ← char     │
+     │  │ term       │  │ term       │  │ term       │              │
+     │  │ desc       │  │ desc       │  │ desc       │              │
+     │  └──────┘  └──────┘  └──────┘              │
+     └──────────────────────────────────┘
+
+   セクションパラメータ:
+     section.sectionClass : 外側 <section> の追加 CSS クラス（省略時: "section--white"）
+     section.heading      : sectionHeader の上段テキスト（省略時はヘッダーなし）
+     section.subheading   : sectionHeader の下段テキスト
+     section.items[]      : カードデータ配列
+       item.char : 大きく表示する文字（例: "A", "01"）
+       item.term : 用語・コンセプト名
+       item.desc : 説明文
+   ──────────────────────────────────────────────────────────────────── #}
+{% from "block-card-philosophy/block-card-philosophy.njk" import philosophyCard %}
+{% from "components/macros.njk" import sectionHeader %}
+<section class="section {{ section.sectionClass or 'section--white' }}">
+  <div class="container">
+    {% if section.heading %}{{ sectionHeader(section.heading, section.subheading or "", true) }}{% endif %}
+    <div class="philosophy-grid">
+      {% for item in section.items %}
+        {{ philosophyCard(item.char, item.term, item.desc) }}
+      {% endfor %}
+    </div>
+  </div>
+</section>

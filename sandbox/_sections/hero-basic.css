@@ -1,0 +1,52 @@
+/* hero-basic — ヒーローセクション
+   ── 調整ポイント ── */
+.hero-basic {
+  --hero-basic-padding: 8rem 0 6rem;
+  --hero-basic-bg: var(--color-bg-dark, #0f172a);
+  --hero-basic-color: white;
+  --hero-basic-min-height: 60vh;
+  --hero-basic-title-size: clamp(2rem, 5vw, 3.5rem);
+  --hero-basic-subtitle-color: var(--color-secondary, #00C6FF);
+  --hero-basic-lead-opacity: 0.85;
+
+  padding: var(--hero-basic-padding);
+  background: var(--hero-basic-bg);
+  color: var(--hero-basic-color);
+  min-height: var(--hero-basic-min-height);
+  display: flex;
+  align-items: center;
+}
+.hero-basic__inner {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.hero-basic__subtitle {
+  display: inline-block;
+  font-family: var(--font-english, "Lato", sans-serif);
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--hero-basic-subtitle-color);
+  margin-bottom: 1rem;
+}
+.hero-basic__title {
+  font-size: var(--hero-basic-title-size);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+.hero-basic__lead {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  opacity: var(--hero-basic-lead-opacity);
+  margin-bottom: 2rem;
+}
+.hero-basic__note {
+  font-size: 0.85rem;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}

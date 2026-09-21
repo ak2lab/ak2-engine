@@ -1,0 +1,30 @@
+{# ── cta section ─────────────────────────────────────────────────────────
+   ctaSection マクロを使った CTA（コールトゥアクション）セクションを出力する。
+   タイトル・テキスト・リンクボタンを中央揃えで表示。グラデーション背景対応。
+
+   主な用途: ページ末尾などへの誘導ボタン・次のアクションへの案内。
+             <section class="section section--cta"> を直接出力する（ラッパー不要）。
+
+   見た目のイメージ:
+     ┌───────────────────────┐（グラデーション背景）
+     │           大見出しタイトル                   │
+     │       説明テキスト（HTML 使用可）            │
+     │           [ボタン → リンク先]               │
+     └───────────────────────┘
+
+   セクションパラメータ:
+     section.title    : CTA の大見出し（必須）
+     section.text     : 説明テキスト（HTML タグ使用可）
+     section.linkUrl  : ボタンのリンク先 URL
+     section.linkText : ボタンのラベルテキスト
+     section.gradient : 背景グラデーション CSS 値
+                        （省略時: "linear-gradient(135deg,#eff6ff,#f0f9ff)"）
+   ──────────────────────────────────────────────────────────────────── #}
+{% from "block-cta-standard/block-cta-standard.njk" import ctaSection %}
+{{ ctaSection(
+  title=section.title,
+  text=section.text,
+  linkUrl=section.linkUrl,
+  linkText=section.linkText,
+  gradient=section.gradient or "linear-gradient(135deg,#eff6ff,#f0f9ff)"
+) }}

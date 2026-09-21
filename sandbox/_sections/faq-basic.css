@@ -1,0 +1,75 @@
+/* faq-basic — FAQ アコーディオン
+   ── 調整ポイント ── */
+.faq-basic {
+  --faq-basic-padding: 5rem 0;
+  --faq-basic-bg: var(--color-bg-secondary, #f8fafc);
+  --faq-basic-title-size: 1.8rem;
+  --faq-basic-label-color: var(--color-secondary, #00C6FF);
+  --faq-basic-item-bg: white;
+  --faq-basic-item-radius: 12px;
+
+  padding: var(--faq-basic-padding);
+  background: var(--faq-basic-bg);
+}
+.faq-basic__header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.faq-basic__label {
+  display: inline-block;
+  font-family: var(--font-english, "Lato", sans-serif);
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--faq-basic-label-color);
+  margin-bottom: 0.5rem;
+}
+.faq-basic__title {
+  font-size: var(--faq-basic-title-size);
+  font-weight: 700;
+  color: var(--color-dark, #1e293b);
+}
+.faq-basic__list {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.faq-basic__item {
+  background: var(--faq-basic-item-bg);
+  border-radius: var(--faq-basic-item-radius);
+  margin-bottom: 1.2rem;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: box-shadow 0.3s ease;
+}
+.faq-basic__item:hover {
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+.faq-basic__question {
+  padding: 1.5rem 2rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--color-dark, #1e293b);
+  list-style: none;
+}
+.faq-basic__question::-webkit-details-marker { display: none; }
+.faq-basic__icon {
+  transition: transform 0.3s ease;
+  color: var(--color-text-placeholder, #94a3b8);
+  font-size: 0.8rem;
+}
+details[open] .faq-basic__icon {
+  transform: rotate(180deg);
+  color: var(--color-primary, #025DCC);
+}
+.faq-basic__answer {
+  padding: 0 2rem 2rem;
+  color: var(--color-text, #475569);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  border-top: 1px solid var(--color-bg-subtle, #f1f5f9);
+  padding-top: 1.5rem;
+}

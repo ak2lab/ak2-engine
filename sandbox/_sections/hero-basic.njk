@@ -1,0 +1,49 @@
+{# hero-basic — ヒーローセクション
+   ─────────────────────────────────────
+   YAML パラメータ:
+     subtitle    - 英語小見出し
+     title       - 大見出し（必須）
+     lead        - リード文（HTML可）
+     note        - info アイコン付きメモ
+     extraClass  - 追加CSSクラス
+     style       - CSS変数の上書き（例: "--hero-basic-bg: #1a1a2e"）
+     effects[]   - 背景エフェクト配列
+
+   CSS 調整変数:
+     --hero-basic-padding        : セクション余白（default: 8rem 0 6rem）
+     --hero-basic-bg             : 背景色（default: #0f172a）
+     --hero-basic-color          : テキスト色（default: white）
+     --hero-basic-min-height     : 最小高さ（default: 60vh）
+     --hero-basic-title-size     : 見出しサイズ（default: clamp(2rem, 5vw, 3.5rem)）
+     --hero-basic-subtitle-color : 小見出し色（default: #00C6FF）
+     --hero-basic-lead-opacity   : リード文の透過度（default: 0.85）
+   ───────────────────────────────────── #}
+<section class="hero-basic{% if section.extraClass %} {{ section.extraClass }}{% endif %}"
+  style="position:relative; overflow:hidden;">
+
+  {% for effect in section.effects | default([]) %}
+  {% set effectName = effect.name if effect.name else effect %}
+  <canvas data-section-effect="{{ effectName }}"
+    {% if effect.name %}data-section-effect-options="{{ effect | dump | escape }}"{% endif %}
+    style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;mix-blend-mode:screen;"></canvas>
+  {% endfor %}
+
+  <div class="container" style="position:relative; z-index:1;">
+    <div class="hero-basic__inner fade-in-section">
+      {% if section.subtitle %}
+      <span class="hero-basic__subtitle">{{ section.subtitle }}</span>
+      {% endif %}
+      <h1 class="hero-basic__title">{{ section.title }}</h1>
+      {% if section.lead %}
+      <p class="hero-basic__lead">{{ section.lead | safe }}</p>
+      {% endif %}
+      {% if section.note %}
+      <div class="hero-basic__note">
+        <i data-lucide="info" style="width:16px;height:16px;vertical-align:middle;margin-right:6px"></i>
+        {{ section.note }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</section>

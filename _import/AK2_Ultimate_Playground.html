@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AK² Asset Architect - Ultimate Playground</title>
+  <style>
+    :root {
+      /* AK² Light Theme Default Variables */
+      --bg-color: #f7f7f9;
+      --text-main: #1a1a24;
+      --text-sub: #777788;
+      --accent: #0044ff;
+      --menu-color: #1a1a24;
+      --drawer-bg: #ffffff;
+      
+      --header-h: 80px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease, padding-right 0.3s ease;
+    }
+
+    /* =========================================
+       Responsive View Mode Control
+       ========================================= */
+    @media (max-width: 768px) {
+      #global-mount-point { display: none !important; }
+      #toggle-mount-point { display: flex !important; }
+    }
+    @media (min-width: 769px) {
+      #global-mount-point { display: flex !important; }
+      #toggle-mount-point { display: none !important; }
+    }
+    body.force-desktop #global-mount-point { display: flex !important; }
+    body.force-desktop #toggle-mount-point { display: none !important; }
+    body.force-mobile #global-mount-point { display: none !important; }
+    body.force-mobile #toggle-mount-point { display: flex !important; }
+
+    /* =========================================
+       Layout & Playground UI
+       ========================================= */
+    .ak2-header {
+      position: fixed; top: 0; left: 0; width: 100%; height: var(--header-h);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; z-index: 100; gap: 20px;
+      background: color-mix(in srgb, var(--bg-color) 80%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid color-mix(in srgb, var(--text-main) 10%, transparent);
+      transition: padding-right 0.3s ease; 
+    }
+
+    .header-brand { font-size: 20px; font-weight: 300; letter-spacing: 2px; color: var(--text-main); }
+    
+    /* トグルボタン位置の切り替え (Order制御) */
+    .ak2-header .header-brand { order: 1; flex-grow: 1; }
+    .ak2-header #global-mount-point { order: 2; }
+    .ak2-header #toggle-mount-point { order: 3; }
+
+    .ak2-header.toggle-pos-left .header-brand { order: 2; text-align: left; }
+    .ak2-header.toggle-pos-left #toggle-mount-point { order: 1; }
+    .ak2-header.toggle-pos-left #global-mount-point { order: 3; margin-left: auto; }
+
+    .main-content { padding: 120px 40px 40px; min-height: 200vh; }
+    .main-content h1 { font-weight: 300; margin-bottom: 10px; }
+    .main-content p { color: var(--text-sub); margin-bottom: 40px; }
+
+    .playground-panel {
+      background: color-mix(in srgb, var(--text-main) 3%, transparent);
+      border: 1px solid color-mix(in srgb, var(--text-main) 10%, transparent);
+      border-radius: 12px; padding: 30px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;
+      max-width: 1000px;
+    }
+
+    .control-group { display: flex; flex-direction: column; gap: 10px; }
+    .control-group label { font-size: 12px; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+    
+    select {
+      background: var(--bg-color); color: var(--text-main);
+      border: 1px solid color-mix(in srgb, var(--text-main) 20%, transparent);
+      padding: 10px; border-radius: 6px; font-size: 14px; outline: none; cursor: pointer;
+    }
+
+    .color-pickers { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .color-item { display: flex; align-items: center; gap: 10px; }
+    .color-item input[type="color"] {
+      -webkit-appearance: none; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; overflow: hidden; padding: 0; background: none; border: 1px solid rgba(0,0,0,0.1);
+    }
+    .color-item input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    .color-item input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
+    .color-item span { font-size: 12px; }
+
+    /* =========================================
+       Asset 1: Global Menu Variations
+       ========================================= */
+    #global-mount-point { display: flex; align-items: center; }
+    .ak2-global-menu { display: flex; gap: 30px; position: relative; }
+    .ak2-global-menu a {
+      color: var(--text-sub); text-decoration: none; font-size: 14px; letter-spacing: 1px; font-weight: 500;
+      padding: 8px 12px; transition: color 0.3s; position: relative; z-index: 1;
+    }
+    .ak2-global-menu a:hover, .ak2-global-menu a.is-active { color: var(--text-main); }
+
+    .ak2-global-menu-line {
+      position: absolute; bottom: 0; left: 0; height: 2px;
+      background: var(--accent); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      pointer-events: none; opacity: 0;
+    }
+
+    .ak2-global-menu-pill {
+      position: absolute; top: 0; left: 0; height: 100%;
+      background: color-mix(in srgb, var(--accent) 15%, transparent);
+      border-radius: 20px; transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      pointer-events: none; opacity: 0;
+    }
+
+    .ak2-global-bracket a { padding: 8px 24px; transition: all 0.3s ease; }
+    .ak2-global-bracket a::before, .ak2-global-bracket a::after {
+      position: absolute; opacity: 0; color: var(--accent); transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+    }
+    .ak2-global-bracket a::before { content: '['; left: 8px; transform: translateX(5px); }
+    .ak2-global-bracket a::after { content: ']'; right: 8px; transform: translateX(-5px); }
+    .ak2-global-bracket a:hover::before, .ak2-global-bracket a.is-active::before { opacity: 1; transform: translateX(0); }
+    .ak2-global-bracket a:hover::after, .ak2-global-bracket a.is-active::after { opacity: 1; transform: translateX(0); }
+
+    .ak2-global-shift a {
+      overflow: hidden; display: inline-flex; flex-direction: column;
+      height: 20px; padding: 0 12px;
+    }
+    .ak2-global-shift a span { transition: transform 0.4s cubic-bezier(0.8, 0, 0.2, 1); line-height: 20px; }
+    .ak2-global-shift a::after {
+      content: attr(data-text); color: var(--accent); position: absolute;
+      top: 100%; left: 0; width: 100%; text-align: center; line-height: 20px;
+      transition: transform 0.4s cubic-bezier(0.8, 0, 0.2, 1);
+    }
+    .ak2-global-shift a:hover span { transform: translateY(-100%); }
+    .ak2-global-shift a:hover::after { transform: translateY(-100%); }
+
+    .ak2-global-dot a::before {
+      content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%) scale(0);
+      width: 4px; height: 4px; border-radius: 50%; background: var(--accent);
+      transition: transform 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+    }
+    .ak2-global-dot a:hover::before, .ak2-global-dot a.is-active::before { transform: translateX(-50%) scale(1); }
+
+
+    /* =========================================
+       Asset 2: Toggle Button Variations
+       ========================================= */
+    #toggle-mount-point { display: flex; justify-content: center; align-items: center; width: 48px; height: 48px; z-index: 101; }
+    
+    /* すべてのトグルボタン共通の角丸正方形ベース */
+    .ak2-toggle-base {
+      width: 48px; height: 48px; 
+      border-radius: 12px; 
+      background: color-mix(in srgb, var(--text-main) 5%, transparent);
+      border: 1px solid color-mix(in srgb, var(--text-main) 10%, transparent);
+      position: relative;
+      display: flex; justify-content: center; align-items: center;
+      cursor: pointer; outline: none; padding: 0;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .ak2-toggle-base:hover { background: color-mix(in srgb, var(--text-main) 10%, transparent); }
+
+    /* 内部の線コンテナ (幅30px, 高さ20pxの中心配置用) */
+    .ak2-toggle-lines { position: relative; width: 30px; height: 20px; }
+
+    /* 1. Geometric Morph */
+    .btn-geometric span {
+      display: block; position: absolute; width: 100%; height: 3px; background-color: var(--menu-color); border-radius: 3px;
+      transition: transform 0.4s cubic-bezier(0.8, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.8, 0, 0.2, 1), top 0.4s cubic-bezier(0.8, 0, 0.2, 1), background-color 0.3s; left: 0;
+    }
+    .btn-geometric span:nth-child(1) { top: 0px; }
+    .btn-geometric span:nth-child(2) { top: 8.5px; }
+    .btn-geometric span:nth-child(3) { top: 17px; }
+    .ak2-toggle-base.is-active .btn-geometric span:nth-child(1) { top: 8.5px; transform: rotate(45deg); background-color: var(--accent); }
+    .ak2-toggle-base.is-active .btn-geometric span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .ak2-toggle-base.is-active .btn-geometric span:nth-child(3) { top: 8.5px; transform: rotate(-45deg); background-color: var(--accent); }
+
+    /* 2. Magnetic Elastic */
+    .btn-magnetic { width: 30px; height: 20px; position: relative; pointer-events: none; transition: transform 0.1s linear; }
+    .btn-magnetic span {
+      display: block; position: absolute; width: 100%; height: 3px; background-color: var(--menu-color); border-radius: 3px;
+      transition: all 0.6s cubic-bezier(0.68, -0.6, 0.32, 1.6); left: 0;
+    }
+    .btn-magnetic span:nth-child(1) { top: 0px; }
+    .btn-magnetic span:nth-child(2) { top: 8.5px; }
+    .btn-magnetic span:nth-child(3) { top: 17px; }
+    .ak2-toggle-base.is-active .btn-magnetic span:nth-child(1) { top: 8.5px; transform: rotate(135deg); background-color: var(--accent); }
+    .ak2-toggle-base.is-active .btn-magnetic span:nth-child(2) { opacity: 0; transform: rotate(90deg) scale(0); }
+    .ak2-toggle-base.is-active .btn-magnetic span:nth-child(3) { top: 8.5px; transform: rotate(-135deg); background-color: var(--accent); }
+
+    /* 3. Liquid Filter (Gooey) - 初期バージョン(v1)の動きと設定に完全復元 */
+    .btn-liquid { filter: url('#gooey'); width: 30px; height: 20px; position: relative; }
+    .btn-liquid span {
+      display: block; position: absolute; width: 100%; height: 3px; background-color: var(--menu-color); border-radius: 3px;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); left: 0;
+    }
+    .btn-liquid span:nth-child(1) { top: 0px; }
+    .btn-liquid span:nth-child(2) { top: 8.5px; }
+    .btn-liquid span:nth-child(3) { top: 17px; }
+    /* v1の美しいシンプルなクロス挙動 */
+    .ak2-toggle-base.is-active .btn-liquid span:nth-child(1) { top: 8.5px; transform: rotate(45deg); background-color: var(--accent); }
+    .ak2-toggle-base.is-active .btn-liquid span:nth-child(2) { transform: scaleX(0); opacity: 0; }
+    .ak2-toggle-base.is-active .btn-liquid span:nth-child(3) { top: 8.5px; transform: rotate(-45deg); background-color: var(--accent); }
+
+    /* 4. Kinetic Particle (Hybrid) 
+       キャンバスを独立して120x120で描画し、中央にボタンを配置 */
+    #hybrid-wrap { position: relative; width: 48px; height: 48px; }
+    #particle-canvas { position: absolute; top: -36px; left: -36px; width: 120px; height: 120px; z-index: 1; pointer-events: none; }
+
+
+    /* =========================================
+       Asset 3: Drawer Menu Variations
+       ========================================= */
+    .ak2-drawer {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+      background: var(--drawer-bg); z-index: 90;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      pointer-events: none;
+    }
+    .ak2-drawer ul { list-style: none; text-align: center; }
+    .ak2-drawer li { margin: 20px 0; overflow: hidden; }
+    .ak2-drawer a {
+      display: inline-block; color: var(--text-main); text-decoration: none;
+      font-size: 36px; font-weight: 300; letter-spacing: 4px;
+      transition: color 0.3s;
+    }
+    .ak2-drawer a:hover { color: var(--accent); }
+
+    /* Circular Reveal: 右上起点（デフォルト） */
+    .drawer-circular { clip-path: circle(0% at calc(100% - 64px) 40px); transition: clip-path 0.8s cubic-bezier(0.7, 0, 0.2, 1); }
+    .drawer-circular.is-active { clip-path: circle(150% at calc(100% - 64px) 40px); pointer-events: auto; }
+    
+    /* Circular Reveal: 左上起点（ボディクラス付与時に直接上書き） */
+    body.toggle-pos-left .drawer-circular { clip-path: circle(0% at 64px 40px); }
+    body.toggle-pos-left .drawer-circular.is-active { clip-path: circle(150% at 64px 40px); }
+
+    .drawer-circular a { transform: translateY(100%); opacity: 0; transition: transform 0.6s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.6s ease; }
+    .drawer-circular.is-active a { transform: translateY(0); opacity: 1; }
+    .drawer-circular.is-active li:nth-child(1) a { transition-delay: 0.2s; }
+    .drawer-circular.is-active li:nth-child(2) a { transition-delay: 0.3s; }
+    .drawer-circular.is-active li:nth-child(3) a { transition-delay: 0.4s; }
+
+    .drawer-slide-down { transform: translateY(-100%); transition: transform 0.6s cubic-bezier(0.8, 0, 0.2, 1); }
+    .drawer-slide-down.is-active { transform: translateY(0); pointer-events: auto; }
+    .drawer-slide-down a { transform: translateY(-50px); opacity: 0; transition: transform 0.5s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.5s ease; }
+    .drawer-slide-down.is-active a { transform: translateY(0); opacity: 1; }
+    .drawer-slide-down.is-active li:nth-child(1) a { transition-delay: 0.3s; }
+    .drawer-slide-down.is-active li:nth-child(2) a { transition-delay: 0.4s; }
+    .drawer-slide-down.is-active li:nth-child(3) a { transition-delay: 0.5s; }
+
+    .drawer-slide-up { transform: translateY(100%); transition: transform 0.6s cubic-bezier(0.8, 0, 0.2, 1); }
+    .drawer-slide-up.is-active { transform: translateY(0); pointer-events: auto; }
+    .drawer-slide-up a { transform: translateY(50px); opacity: 0; transition: transform 0.5s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.5s ease; }
+    .drawer-slide-up.is-active a { transform: translateY(0); opacity: 1; }
+    .drawer-slide-up.is-active li:nth-child(1) a { transition-delay: 0.3s; }
+    .drawer-slide-up.is-active li:nth-child(2) a { transition-delay: 0.4s; }
+    .drawer-slide-up.is-active li:nth-child(3) a { transition-delay: 0.5s; }
+
+    .drawer-glass { background: color-mix(in srgb, var(--drawer-bg) 70%, transparent); backdrop-filter: blur(20px); opacity: 0; transition: opacity 0.5s ease; }
+    .drawer-glass.is-active { opacity: 1; pointer-events: auto; }
+    .drawer-glass a { transform: scale(0.8) translateZ(0); opacity: 0; transition: transform 0.7s cubic-bezier(0.1, 1, 0.2, 1), opacity 0.7s ease; }
+    .drawer-glass.is-active a { transform: scale(1) translateZ(0); opacity: 1; }
+    .drawer-glass.is-active li:nth-child(1) a { transition-delay: 0.1s; }
+    .drawer-glass.is-active li:nth-child(2) a { transition-delay: 0.2s; }
+    .drawer-glass.is-active li:nth-child(3) a { transition-delay: 0.3s; }
+
+  </style>
+</head>
+<body>
+
+  <!-- Liquidエフェクト用SVGフィルター (v1の完璧な合成設定を復元) -->
+  <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="gooey">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+        <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+        <feBlend in="SourceGraphic" in2="goo" />
+      </filter>
+    </defs>
+  </svg>
+
+  <div id="drawer-mount-point"></div>
+
+  <header class="ak2-header" id="main-header">
+    <div class="header-brand">AK² LAB</div>
+    <div id="global-mount-point"></div>
+    <div id="toggle-mount-point"></div>
+  </header>
+
+  <main class="main-content">
+    <h1>Ultimate Component Playground</h1>
+    <p>完璧な描画解像度、復元されたLiquidフィルター、動的レイアウト連動を体験してください。</p>
+    
+    <div class="playground-panel">
+      <!-- Architecture Controls -->
+      <div class="control-group">
+        <label>View Mode</label>
+        <select id="sel-view">
+          <option value="auto">Auto (Responsive by Width)</option>
+          <option value="desktop">Force Desktop</option>
+          <option value="mobile">Force Mobile</option>
+        </select>
+
+        <label style="margin-top: 10px;">Toggle Position</label>
+        <select id="sel-toggle-pos">
+          <option value="right">Right</option>
+          <option value="left">Left</option>
+        </select>
+
+        <label style="margin-top: 10px;">Global Navigation</label>
+        <select id="sel-global">
+          <option value="underline">Underline Follow</option>
+          <option value="pill">Pill Background</option>
+          <option value="bracket">Bracket Reveal</option>
+          <option value="shift">Shift Up</option>
+          <option value="dot">Dot Indicator</option>
+        </select>
+
+        <label style="margin-top: 10px;">Drawer Menu</label>
+        <select id="sel-drawer">
+          <option value="circular">Circular Reveal</option>
+          <option value="slidedown">Slide Down & Stagger</option>
+          <option value="slideup">Slide Up & Stagger</option>
+          <option value="glass">Glass Scale Blur</option>
+        </select>
+
+        <label style="margin-top: 10px;">Toggle Button</label>
+        <select id="sel-toggle">
+          <option value="geometric" selected>1. Geometric Morph</option>
+          <option value="magnetic">2. Magnetic Elastic</option>
+          <option value="liquid">3. Liquid Filter</option>
+          <option value="particle">4. Kinetic Particle</option>
+        </select>
+      </div>
+
+      <!-- Color Controls -->
+      <div class="control-group">
+        <label>Theme Colors</label>
+        <div class="color-pickers">
+          <div class="color-item">
+            <input type="color" id="col-bg" value="#f7f7f9">
+            <span>Background</span>
+          </div>
+          <div class="color-item">
+            <input type="color" id="col-text" value="#1a1a24">
+            <span>Text & Icons</span>
+          </div>
+          <div class="color-item">
+            <input type="color" id="col-accent" value="#0044ff">
+            <span>Accent (Hover)</span>
+          </div>
+          <div class="color-item">
+            <input type="color" id="col-drawer" value="#ffffff">
+            <span>Drawer BG</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    /**
+     * AK² Asset Architect - Ultimate Playground v5
+     */
+
+    class MenuController {
+      static #isOpen = false;
+      static #listeners = [];
+
+      static toggle() { this.#isOpen = !this.#isOpen; this.#notify(); }
+      static close() { if (this.#isOpen) { this.#isOpen = false; this.#notify(); } }
+      static subscribe(callback) { this.#listeners.push(callback); callback(this.#isOpen); }
+      static unsubscribeAll() { this.#listeners = []; this.#isOpen = false; }
+      static #notify() { this.#listeners.forEach(cb => cb(this.#isOpen)); }
+    }
+
+    // =========================================
+    // Asset 1: Global Menu Variations
+    // =========================================
+    class GlobalMenuUnderline {
+      constructor(container) {
+        container.innerHTML = `<nav class="ak2-global-menu"><a href="#" class="is-active">EXPERTISE</a><a href="#">PROJECTS</a><a href="#">LABORATORY</a><div class="ak2-indicator ak2-global-menu-line"></div></nav>`;
+        this.nav = container.querySelector('nav'); this.indicator = this.nav.querySelector('.ak2-indicator'); this.links = this.nav.querySelectorAll('a');
+        this.links.forEach(l => l.addEventListener('mouseenter', e => this.#move(e.target)));
+        this.nav.addEventListener('mouseleave', () => this.#reset());
+        setTimeout(() => this.#reset(), 50);
+      }
+      #move(target) { this.indicator.style.opacity = '1'; this.indicator.style.width = `${target.offsetWidth}px`; this.indicator.style.left = `${target.offsetLeft}px`; }
+      #reset() { const active = Array.from(this.links).find(l => l.classList.contains('is-active')); if (active) this.#move(active); else this.indicator.style.opacity = '0'; }
+    }
+
+    class GlobalMenuPill {
+      constructor(container) {
+        container.innerHTML = `<nav class="ak2-global-menu"><a href="#" class="is-active">EXPERTISE</a><a href="#">PROJECTS</a><a href="#">LABORATORY</a><div class="ak2-indicator ak2-global-menu-pill"></div></nav>`;
+        this.nav = container.querySelector('nav'); this.indicator = this.nav.querySelector('.ak2-indicator'); this.links = this.nav.querySelectorAll('a');
+        this.links.forEach(l => l.addEventListener('mouseenter', e => this.#move(e.target)));
+        this.nav.addEventListener('mouseleave', () => this.#reset());
+        setTimeout(() => this.#reset(), 50);
+      }
+      #move(target) { this.indicator.style.opacity = '1'; this.indicator.style.width = `${target.offsetWidth}px`; this.indicator.style.left = `${target.offsetLeft}px`; }
+      #reset() { const active = Array.from(this.links).find(l => l.classList.contains('is-active')); if (active) this.#move(active); else this.indicator.style.opacity = '0'; }
+    }
+
+    class GlobalMenuBracket {
+      constructor(container) { container.innerHTML = `<nav class="ak2-global-menu ak2-global-bracket"><a href="#" class="is-active">EXPERTISE</a><a href="#">PROJECTS</a><a href="#">LABORATORY</a></nav>`; }
+    }
+
+    class GlobalMenuShift {
+      constructor(container) {
+        container.innerHTML = `
+          <nav class="ak2-global-menu ak2-global-shift">
+            <a href="#" class="is-active" data-text="EXPERTISE"><span>EXPERTISE</span></a>
+            <a href="#" data-text="PROJECTS"><span>PROJECTS</span></a>
+            <a href="#" data-text="LABORATORY"><span>LABORATORY</span></a>
+          </nav>
+        `;
+      }
+    }
+
+    class GlobalMenuDot {
+      constructor(container) {
+        container.innerHTML = `
+          <nav class="ak2-global-menu ak2-global-dot">
+            <a href="#" class="is-active">EXPERTISE</a>
+            <a href="#">PROJECTS</a>
+            <a href="#">LABORATORY</a>
+          </nav>
+        `;
+      }
+    }
+
+    // =========================================
+    // Asset 2: Toggle Button Variations
+    // =========================================
+    class GeometricMenu {
+      constructor(container) {
+        container.innerHTML = `
+          <button class="ak2-toggle-base">
+            <div class="ak2-toggle-lines btn-geometric"><span></span><span></span><span></span></div>
+          </button>`;
+        const el = container.querySelector('button');
+        el.addEventListener('click', () => MenuController.toggle());
+        MenuController.subscribe(isOpen => el.classList.toggle('is-active', isOpen));
+      }
+    }
+
+    class MagneticMenu {
+      constructor(container) {
+        container.innerHTML = `
+          <button class="ak2-toggle-base btn-magnetic-wrapper">
+            <div class="ak2-toggle-lines btn-magnetic"><span></span><span></span><span></span></div>
+          </button>`;
+        this.wrapper = container.querySelector('button'); this.inner = this.wrapper.querySelector('.btn-magnetic');
+        this.wrapper.addEventListener('mousemove', e => this.#move(e));
+        this.wrapper.addEventListener('mouseleave', () => this.#leave());
+        this.wrapper.addEventListener('click', () => MenuController.toggle());
+        MenuController.subscribe(isOpen => this.wrapper.classList.toggle('is-active', isOpen));
+      }
+      #move(e) { const rect = this.wrapper.getBoundingClientRect(); const x = (e.clientX - (rect.left + rect.width/2)) * 0.4; const y = (e.clientY - (rect.top + rect.height/2)) * 0.4; this.inner.style.transform = `translate(${x}px, ${y}px)`; }
+      #leave() { this.inner.style.transform = `translate(0px, 0px)`; }
+    }
+
+    class LiquidMenu {
+      constructor(container) {
+        container.innerHTML = `
+          <button class="ak2-toggle-base">
+            <div class="ak2-toggle-lines btn-liquid"><span></span><span></span><span></span></div>
+          </button>`;
+        const el = container.querySelector('button');
+        el.addEventListener('click', () => MenuController.toggle());
+        MenuController.subscribe(isOpen => el.classList.toggle('is-active', isOpen));
+      }
+    }
+
+    class ParticleHybridMenu {
+      #particles = []; #numParticles = 120; #w = 120; #h = 120; #isActive = false;
+      #offCanvas; #offCtx; #canvas; #ctx; #geomDOM; #animTimer; #clearFlag = true; #reqId; #lt = 0;
+
+      constructor(container) {
+        // キャンバスサイズを120x120に固定し、外部からのリサイズ影響を受けない独自ループを持つ
+        container.innerHTML = `
+          <div id="hybrid-wrap" style="position:relative; width:48px; height:48px;">
+            <button class="ak2-toggle-base" id="hybrid-geom" style="position:absolute; top:0; left:0; z-index:2; transition: opacity 0.2s;">
+              <div class="ak2-toggle-lines btn-geometric"><span></span><span></span><span></span></div>
+            </button>
+            <canvas id="particle-canvas" style="position:absolute; top:-36px; left:-36px; width:120px; height:120px; z-index:1; pointer-events:none;"></canvas>
+          </div>
+        `;
+        this.#geomDOM = container.querySelector('#hybrid-geom');
+        this.#canvas = container.querySelector('#particle-canvas');
+        this.#ctx = this.#canvas.getContext('2d');
+        this.#offCanvas = document.createElement('canvas');
+        this.#offCtx = this.#offCanvas.getContext('2d', { willReadFrequently: true });
+        
+        this.#initCanvas();
+        this.#create();
+
+        container.querySelector('#hybrid-wrap').addEventListener('click', () => MenuController.toggle());
+        
+        MenuController.subscribe(isOpen => {
+          if (this.#isActive !== isOpen) {
+            this.#isActive = isOpen; 
+            this.#geomDOM.style.opacity = '0';
+            this.#clearFlag = false;
+            this.#updateTargets(); 
+            this.#explode();
+
+            clearTimeout(this.#animTimer);
+            this.#animTimer = setTimeout(() => {
+              this.#geomDOM.classList.toggle('is-active', isOpen);
+              this.#geomDOM.style.opacity = '1';
+              this.#clearFlag = true;
+            }, 800);
+          }
+        });
+
+        this.#reqId = requestAnimationFrame(this.#loop);
+      }
+
+      #initCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        this.#canvas.width = this.#w * dpr;
+        this.#canvas.height = this.#h * dpr;
+        this.#ctx.scale(dpr, dpr);
+        
+        this.#offCanvas.width = this.#w * dpr;
+        this.#offCanvas.height = this.#h * dpr;
+        this.#offCtx.scale(dpr, dpr);
+      }
+
+      #create() {
+        this.#particles = Array.from({length: this.#numParticles}, () => ({x: this.#w/2, y: this.#h/2, vx: 0, vy: 0, tx: 0, ty: 0, s: Math.random()*1.0+0.5}));
+        this.#updateTargets();
+        this.#particles.forEach(p => { p.x = p.tx; p.y = p.ty; });
+      }
+
+      #updateTargets() {
+        if (!this.#particles.length) return;
+        // 120x120キャンバスの中央(60,60)に、30x20の線を精密に配置
+        const len = 30, cx = 60, ppl = this.#numParticles/3;
+        for (let i=0; i<this.#numParticles; i++) {
+          const li = Math.floor(i/ppl), t = (i%ppl)/(ppl-1);
+          let tx, ty;
+          if (!this.#isActive) {
+            tx = cx - len/2 + len*t;
+            if(li===0) ty = 51.5; else if(li===1) ty = 60; else ty = 68.5;
+          } else {
+            const clen = 30;
+            if (li===0) { tx = cx - clen/2 + clen*t; ty = 60 - clen/2 + clen*t; } 
+            else if (li===2) { tx = cx - clen/2 + clen*t; ty = 60 + clen/2 - clen*t; } 
+            else { tx = cx; ty = 60; } 
+          }
+          this.#particles[i].tx = tx; this.#particles[i].ty = ty;
+        }
+      }
+
+      #explode() {
+        this.#particles.forEach(p => {
+          const a = Math.random()*Math.PI*2, f = Math.random()*12+3;
+          p.vx += Math.cos(a)*f; p.vy += Math.sin(a)*f;
+        });
+      }
+
+      #updateLogic(dt) {
+        this.#particles.forEach(p => {
+          p.vx += (p.tx - p.x)*0.08; p.vy += (p.ty - p.y)*0.08;
+          p.vx *= 0.80; p.vy *= 0.80; p.x += p.vx; p.y += p.vy;
+        });
+      }
+
+      #drawLogic() {
+        const rootStyles = getComputedStyle(document.documentElement);
+        const menuColor = rootStyles.getPropertyValue('--menu-color').trim() || '#1a1a24';
+        const accentColor = rootStyles.getPropertyValue('--accent').trim() || '#0044ff';
+
+        // どんな背景色でも自然にフェードアウトする論理合成
+        this.#offCtx.globalAlpha = 0.4;
+        this.#offCtx.globalCompositeOperation = 'destination-out';
+        this.#offCtx.fillStyle = '#fff'; // destination-outでは色は無視され、Alphaのみが消去に使われる
+        this.#offCtx.fillRect(0, 0, this.#w, this.#h);
+        this.#offCtx.globalAlpha = 1.0;
+        this.#offCtx.globalCompositeOperation = 'source-over';
+        
+        this.#offCtx.fillStyle = this.#isActive ? accentColor : menuColor;
+        this.#offCtx.beginPath();
+        this.#particles.forEach(p => { this.#offCtx.moveTo(p.x, p.y); this.#offCtx.arc(p.x, p.y, p.s, 0, Math.PI*2); });
+        this.#offCtx.fill();
+        
+        // DPRによる二重拡大バグを防ぐため、論理サイズを明示してメインCanvasへ転写
+        this.#ctx.drawImage(this.#offCanvas, 0, 0, this.#w, this.#h);
+      }
+
+      #loop = (t) => {
+        const dt = (t - this.#lt) / 1000;
+        this.#lt = t;
+        
+        if (!document.getElementById('particle-canvas')) return;
+
+        this.#ctx.clearRect(0, 0, this.#w, this.#h);
+        if(!this.#clearFlag) {
+            this.#updateLogic(dt);
+            this.#drawLogic();
+        }
+        this.#reqId = requestAnimationFrame(this.#loop);
+      }
+
+      destroy() { clearTimeout(this.#animTimer); cancelAnimationFrame(this.#reqId); }
+    }
+
+    // =========================================
+    // Asset 3: Drawer Menu Variations & Layout Shift Fix
+    // =========================================
+    const drawerHTML = `
+      <nav class="ak2-drawer">
+        <ul>
+          <li><a href="#">EXPERTISE</a></li>
+          <li><a href="#">PROJECTS</a></li>
+          <li><a href="#">LABORATORY</a></li>
+        </ul>
+      </nav>
+    `;
+
+    class BaseDrawer {
+      constructor(container, className) {
+        container.innerHTML = drawerHTML;
+        this.el = container.querySelector('.ak2-drawer');
+        this.el.classList.add(className);
+        
+        MenuController.subscribe(isOpen => {
+          this.el.classList.toggle('is-active', isOpen);
+          
+          if (isOpen) {
+            const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+            document.body.style.overflow = 'hidden';
+            document.body.style.paddingRight = `${scrollbarWidth}px`;
+            const header = document.querySelector('.ak2-header');
+            if (header) header.style.paddingRight = `calc(40px + ${scrollbarWidth}px)`;
+          } else {
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            const header = document.querySelector('.ak2-header');
+            if (header) header.style.paddingRight = '';
+          }
+        });
+        
+        this.el.querySelectorAll('a').forEach(a => a.addEventListener('click', () => MenuController.close()));
+      }
+    }
+
+    // =========================================
+    // Bootstrapping & Playground Logic
+    // =========================================
+    document.addEventListener('DOMContentLoaded', () => {
+      const mountGlobal = document.getElementById('global-mount-point');
+      const mountDrawer = document.getElementById('drawer-mount-point');
+      const mountToggle = document.getElementById('toggle-mount-point');
+      let currentEngine = null;
+
+      const rebuild = () => {
+        MenuController.unsubscribeAll();
+        
+        const gType = document.getElementById('sel-global').value;
+        if(gType === 'underline') new GlobalMenuUnderline(mountGlobal);
+        if(gType === 'pill') new GlobalMenuPill(mountGlobal);
+        if(gType === 'bracket') new GlobalMenuBracket(mountGlobal);
+        if(gType === 'shift') new GlobalMenuShift(mountGlobal);
+        if(gType === 'dot') new GlobalMenuDot(mountGlobal);
+
+        const dType = document.getElementById('sel-drawer').value;
+        if(dType === 'circular') new BaseDrawer(mountDrawer, 'drawer-circular');
+        if(dType === 'slidedown') new BaseDrawer(mountDrawer, 'drawer-slide-down');
+        if(dType === 'slideup') new BaseDrawer(mountDrawer, 'drawer-slide-up');
+        if(dType === 'glass') new BaseDrawer(mountDrawer, 'drawer-glass');
+
+        const tType = document.getElementById('sel-toggle').value;
+        if(currentEngine) { currentEngine.destroy(); currentEngine = null; }
+        
+        if(tType === 'geometric') new GeometricMenu(mountToggle);
+        else if(tType === 'magnetic') new MagneticMenu(mountToggle);
+        else if(tType === 'liquid') new LiquidMenu(mountToggle);
+        else if(tType === 'particle') {
+          currentEngine = new ParticleHybridMenu(mountToggle);
+        }
+      };
+
+      rebuild();
+
+      ['sel-global', 'sel-drawer', 'sel-toggle'].forEach(id => {
+        document.getElementById(id).addEventListener('change', rebuild);
+      });
+
+      // View Mode Control
+      document.getElementById('sel-view').addEventListener('change', (e) => {
+        document.body.classList.remove('force-desktop', 'force-mobile');
+        if (e.target.value !== 'auto') {
+          document.body.classList.add(`force-${e.target.value}`);
+        }
+      });
+
+      // Toggle Position Control
+      document.getElementById('sel-toggle-pos').addEventListener('change', (e) => {
+        const header = document.getElementById('main-header');
+        if(e.target.value === 'left') {
+          header.classList.add('toggle-pos-left');
+          document.body.classList.add('toggle-pos-left');
+        } else {
+          header.classList.remove('toggle-pos-left');
+          document.body.classList.remove('toggle-pos-left');
+        }
+      });
+
+      // Color Controls
+      const root = document.documentElement;
+      document.getElementById('col-bg').addEventListener('input', e => root.style.setProperty('--bg-color', e.target.value));
+      document.getElementById('col-text').addEventListener('input', e => {
+        root.style.setProperty('--text-main', e.target.value);
+        root.style.setProperty('--menu-color', e.target.value);
+      });
+      document.getElementById('col-accent').addEventListener('input', e => root.style.setProperty('--accent', e.target.value));
+      document.getElementById('col-drawer').addEventListener('input', e => root.style.setProperty('--drawer-bg', e.target.value));
+    });
+
+  </script>
+</body>
+</html>

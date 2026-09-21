@@ -1,0 +1,34 @@
+{
+  "name": "@ak2lab/engine",
+  "version": "0.2.1",
+  "description": "AK² Lab — Engine & Plugin System for Eleventy-based websites",
+  "author": "AK² Lab",
+  "license": "ISC",
+  "main": "src/index.js",
+  "bin": {
+    "ak2": "bin/ak2.js"
+  },
+  "files": [
+    "src/",
+    "bin/",
+    "registry.json"
+  ],
+  "scripts": {
+    "start:sandbox": "eleventy --config=.eleventy.sandbox.js --serve",
+    "build:sandbox": "eleventy --config=.eleventy.sandbox.js",
+    "build": "npm run build:sandbox"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.2",
+    "markdown-it-anchor": "^9.2.0",
+    "pagefind": "^1.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ak2lab/ak2-engine.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  }
+}

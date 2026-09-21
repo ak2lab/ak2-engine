@@ -1,0 +1,74 @@
+/* ── search modal ──────────────────────────────────── */
+[data-search-modal] {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+  transition: opacity 0.2s, visibility 0.2s;
+}
+
+[data-search-modal][aria-hidden="true"] {
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+}
+
+[data-search-modal-backdrop] {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+[data-search-modal-content] {
+  position: relative;
+  width: min(640px, 90vw);
+  max-height: 70vh;
+  overflow-y: auto;
+  background: var(--color-white);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+}
+
+/* ── search trigger button ────────────────────────── */
+[data-search-trigger] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+[data-search-trigger]:hover {
+  opacity: 1;
+}
+
+[data-search-trigger] svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── pagefind UI overrides ────────────────────────── */
+[data-search-modal] .pagefind-ui__search-input {
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
+[data-search-modal] .pagefind-ui__result-link {
+  font-weight: 600;
+}
+
+/* サムネイル画像がない場合の左の不自然な空き（padding）を消す */
+[data-search-modal] .pagefind-ui__result-thumb {
+  display: none;
+}

@@ -1,0 +1,39 @@
+{# ── faq section ─────────────────────────────────────────────────────────
+   faqItem アコーディオンのリストを出力する（デフォルト: "section--faq" 背景）。
+   <details> / <summary> を使ったアコーディオン形式の Q&A。
+
+   主な用途: よくある質問・FAQ ページ、サービスページの Q&A セクション。
+
+   見た目のイメージ:
+     ┌─────────────────────────┐
+     │  [section-header]                                │
+     │  ┌────────────────────┐    │
+     │  │ ▼ Q. 質問テキスト                     │    │
+     │  └────────────────────┘    │
+     │  ┌────────────────────┐    │
+     │  │ ▼ Q. 質問テキスト                     │    │
+     │  └────────────────────┘    │
+     └─────────────────────────┘
+     クリックで回答（item.a）が展開される。a の値に HTML タグ使用可。
+
+   セクションパラメータ:
+     section.sectionClass : 外側 <section> の追加 CSS クラス（省略時: "section--faq"）
+     section.heading      : sectionHeader の上段テキスト（省略時はヘッダーなし）
+     section.subheading   : sectionHeader の下段テキスト
+     section.dark         : sectionHeader をダーク表示にするか（省略時: false）
+     section.items[]      : Q&A データ配列
+       item.q : 質問テキスト（サマリーとして常に表示）
+       item.a : 回答テキスト（HTML タグ使用可）
+   ──────────────────────────────────────────────────────────────────── #}
+{% from "block-faq-accordion/block-faq-accordion.njk" import faqItem %}
+{% from "components/macros.njk" import sectionHeader %}
+<section class="section {{ section.sectionClass or 'section--faq' }}">
+  <div class="container">
+    {% if section.heading %}{{ sectionHeader(section.heading, section.subheading or "", section.dark) }}{% endif %}
+    <div class="sb-faq-wrap">
+      {% for item in section.items %}
+        {{ faqItem(item.q, item.a) }}
+      {% endfor %}
+    </div>
+  </div>
+</section>

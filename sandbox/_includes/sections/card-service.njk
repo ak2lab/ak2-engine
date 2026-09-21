@@ -1,0 +1,42 @@
+{# ── card-service section ─────────────────────────────────────────────────
+   serviceCard カードのグリッドを出力する（デフォルト: 白背景）。
+   タイトル・タグ・価格・説明文・補足情報を含むサービス紹介カード。
+
+   主な用途: 料金プラン・サービスメニューの一覧表示（受注サービスサイト等）。
+
+   見た目のイメージ:
+     ┌────────────────────────────────────┐
+     │  [section-header]                                                      │
+     │  ┌────────────┐  ┌────────────┐            │
+     │  │ サービス名             │  │ サービス名             │            │
+     │  │ [tag]                  │  │ [tag]                  │            │
+     │  │ ¥price                 │  │ ¥price                 │            │
+     │  │ 説明文...              │  │ 説明文...              │            │
+     │  │ [note]                 │  │ [note]                 │            │
+     │  └────────────┘  └────────────┘            │
+     └────────────────────────────────────┘
+
+   セクションパラメータ:
+     section.sectionClass : 外側 <section> の追加 CSS クラス（省略時: "section--white"）
+     section.heading      : sectionHeader の上段テキスト（省略時はヘッダーなし）
+     section.subheading   : sectionHeader の下段テキスト
+     section.dark         : sectionHeader をダーク表示にするか（省略時: false）
+     section.items[]      : サービスデータ配列
+       item.title : サービス名（必須）
+       item.tag   : タグラベル（例: "ご予算重視プラン"）
+       item.price : 価格表示（省略可）
+       item.desc  : サービス説明文
+       item.note  : 補足情報（省略可。tech-note-card スタイルで表示）
+   ──────────────────────────────────────────────────────────────────── #}
+{% from "block-card-service/block-card-service.njk" import serviceCard %}
+{% from "components/macros.njk" import sectionHeader %}
+<section class="section {{ section.sectionClass or 'section--white' }}">
+  <div class="container">
+    {% if section.heading %}{{ sectionHeader(section.heading, section.subheading or "", section.dark) }}{% endif %}
+    <div class="card-grid">
+      {% for item in section.items %}
+        {{ serviceCard(item.title, item.tag, item.price, item.desc, item.note) }}
+      {% endfor %}
+    </div>
+  </div>
+</section>

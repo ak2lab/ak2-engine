@@ -1,0 +1,47 @@
+---
+layout: layouts/base.njk
+navBg: "solid"
+---
+<main class="article-page">
+  <div class="article-page__hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">ホーム</a>
+        {% if postCategory %}
+          {% set cats = postCategory if postCategory | isArray else [postCategory] %}
+          {% for cat in cats %}
+            <span class="breadcrumb__sep">›</span>
+            <a href="/blog/category/{{ cat | catSlug }}/">{{ cat }}</a>
+          {% endfor %}
+        {% endif %}
+        <span class="breadcrumb__sep">›</span>
+        <span>{{ title }}</span>
+      </div>
+      <h1 class="article-page__title">{{ title }}</h1>
+      {% if date or updated %}
+      <div class="blog-post__meta">
+        {% if date %}<time datetime="{{ date | dateIso }}">{{ date | dateFormat }}</time>{% endif %}
+        {% if updated %}<span class="blog-post__updated">（更新: <time datetime="{{ updated | dateIso }}">{{ updated | dateFormat }}</time>）</span>{% endif %}
+      </div>
+      {% endif %}
+      {% if postTags %}
+      <div class="blog-post__tags">
+        {% for tag in postTags %}
+          <a href="/blog/tag/{{ tag }}/" class="blog-post__tag">{{ tag | tagName }}</a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="article-page__body">
+    <div class="container">
+      {% set tocHtml = content | toc %}
+      {% if tocHtml %}
+      <div class="article-page__toc">{{ tocHtml | safe }}</div>
+      {% endif %}
+      <div class="prose">
+        {{ content | safe }}
+      </div>
+    </div>
+  </div>
+</main>

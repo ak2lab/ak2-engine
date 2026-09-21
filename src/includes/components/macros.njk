@@ -1,0 +1,291 @@
+{#
+   AK² Lab - Nunjucks マクロ集（サイト共通ユーティリティ）
+
+   プラグイン化済みのマクロ:
+   - layout-hero-kinetic — heroLogo, heroContent, heroWave, pageHero
+   - block-card-philosophy — philosophyCard
+   - block-card-stance — stanceCard
+   - block-card-target — targetCard
+   - block-card-service — serviceCard
+   - block-card-sample — sampleCard
+   - block-card-feature — featureItem
+   - block-concept-standard — conceptBlock
+   - block-imagecontent-standard — imageContentBlock
+   - block-faq-accordion — faqItem
+   - block-form-contact — contactForm
+   - block-cta-standard — ctaSection
+   - effect-bg-sakura — bgSakura
+   - effect-bg-snow — bgSnow
+   - effect-bg-aurora — bgAurora
+   - effect-bg-sparks — bgSparks
+#}
+
+
+{# ---- セクションヘッダー ----------------------------------------
+   subtitle : 英語小見出し（Roboto Mono・シアン）
+   title    : 日本語大見出し
+   dark     : true で文字を白に
+   ------------------------------------------------------------ #}
+{% macro sectionHeader(subtitle, title, dark=false) %}
+<div class="section-header{% if dark %} section-header--dark{% endif %}">
+  <span class="section-header__subtitle">{{ subtitle }}</span>
+  <h2 class="section-header__title">{{ title }}</h2>
+</div>
+{%- endmacro %}
+
+
+{# ---- フェードイン ラッパー ------------------------------------
+   delay : ms 単位の遅延（省略可）
+   用法  : {% call fadeIn(200) %}...{% endcall %}
+   ------------------------------------------------------------ #}
+{% macro fadeIn(delay=0) %}
+<div class="fade-in-section"{% if delay %} data-delay="{{ delay }}"{% endif %}>
+  {{ caller() }}
+</div>
+{%- endmacro %}
+
+
+{# ---- 背景ぼかし図形 -------------------------------------------
+   shapes : [{top, left, right, bottom, w, h, c1, c2, delay, reverse}]
+   ------------------------------------------------------------ #}
+{% macro bgShapes(shapes) %}
+<div class="bg-shape-layer" aria-hidden="true">
+  {% for s in shapes %}
+  <div class="bg-shape-item" style="
+    {% if s.top    %}top:{{ s.top }};{% endif %}
+    {% if s.left   %}left:{{ s.left }};{% endif %}
+    {% if s.right  %}right:{{ s.right }};{% endif %}
+    {% if s.bottom %}bottom:{{ s.bottom }};{% endif %}
+    width:{{ s.w | default('800px') }};
+    height:{{ s.h | default('400px') }};
+    background:linear-gradient(135deg,{{ s.c1 }},{{ s.c2 | default('transparent') }});
+    {% if s.delay   %}animation-delay:{{ s.delay }};{% endif %}
+    {% if s.reverse %}animation-direction:reverse;{% endif %}
+  "></div>
+  {% endfor %}
+</div>
+{%- endmacro %}
+
+
+{# ---- 放射状グロー光源 -------------------------------------------
+   glows : [{x, y, color, size, delay}]
+     x/y   : 位置（"50%" 等の % 指定）
+     color : グロー色（hsla / rgba 推奨）
+     size  : グロー直径（省略時 "600px"）
+     delay : アニメーション遅延（省略時なし）
+   ------------------------------------------------------------ #}
+{% macro bgGlow(glows) %}
+<div class="bg-glow-layer" aria-hidden="true">
+  {% for g in glows %}
+  <div class="bg-glow-item" style="
+    left:{{ g.x | default('50%') }};
+    top:{{ g.y | default('50%') }};
+    width:{{ g.size | default('600px') }};
+    height:{{ g.size | default('600px') }};
+    background:radial-gradient(circle,{{ g.color }},transparent 70%);
+    {% if g.delay %}animation-delay:{{ g.delay }};{% endif %}
+  "></div>
+  {% endfor %}
+</div>
+{%- endmacro %}
+
+
+{# ---- ドットグリッド / ラインパターン ---------------------------
+   type  : "dots" | "lines" | "cross"（省略時 "dots"）
+   color : パターン色（省略時 rgba(2,93,204,0.1)）
+   gap   : パターン間隔 px（省略時 24）
+   size  : ドット半径 or ライン幅 px（省略時 2）
+   ------------------------------------------------------------ #}
+{% macro bgGrid(type="dots", color="rgba(2,93,204,0.1)", gap=24, size=2) %}
+{% if type == "lines" %}
+{% set bgImg = "repeating-linear-gradient(0deg," + color + " 0," + color + " " + size + "px,transparent " + size + "px,transparent " + gap + "px)" %}
+{% elif type == "cross" %}
+{% set bgImg = "repeating-linear-gradient(0deg," + color + " 0," + color + " " + size + "px,transparent " + size + "px,transparent " + gap + "px),repeating-linear-gradient(90deg," + color + " 0," + color + " " + size + "px,transparent " + size + "px,transparent " + gap + "px)" %}
+{% else %}
+{% set bgImg = "radial-gradient(" + size + "px circle at " + gap + "px " + gap + "px," + color + " 100%,transparent 100%)" %}
+{% endif %}
+<div class="bg-grid-layer" aria-hidden="true"
+  style="background-image:{{ bgImg }};background-size:{{ gap }}px {{ gap }}px;"></div>
+{%- endmacro %}
+
+
+{# ---- 斜めグラデーションバンド ---------------------------------
+   streaks : [{angle, c1, c2, width, pos, opacity, delay}]
+     angle   : 帯の角度（省略時 "135deg"）
+     c1      : 帯の中心色
+     c2      : 帯の端色（省略時 transparent）
+     width   : 帯の幅（省略時 "300px"）
+     pos     : 帯の中心位置（省略時 "50%"）
+     opacity : 透明度 0〜1（省略時 1）
+     delay   : アニメーション遅延（省略時なし）
+   ------------------------------------------------------------ #}
+{% macro bgStreak(streaks) %}
+<div class="bg-streak-layer" aria-hidden="true">
+  {% for s in streaks %}
+  <div class="bg-streak-item" style="
+    background:linear-gradient({{ s.angle | default('135deg') }},transparent,{{ s.c1 }},{{ s.c2 | default('transparent') }},transparent);
+    {% if s.opacity %}opacity:{{ s.opacity }};{% endif %}
+    {% if s.delay   %}animation-delay:{{ s.delay }};{% endif %}
+  "></div>
+  {% endfor %}
+</div>
+{%- endmacro %}
+
+
+{# ---- コンテンツプレースホルダー --------------------------------
+   title    : メインテキスト
+   note     : サブテキスト（monospace）
+   linkUrl  : ボタンのリンク先（省略可）
+   linkText : ボタンのラベル（省略可）
+   ------------------------------------------------------------ #}
+{% macro contentPlaceholder(title, note, linkUrl="", linkText="") %}
+<div class="content-placeholder">
+  <p class="content-placeholder__title">{{ title }}</p>
+  {% if note %}<p class="content-placeholder__note">{{ note }}</p>{% endif %}
+  {% if linkUrl and linkText %}
+    <a href="{{ linkUrl }}" class="btn-base btn-outline">{{ linkText }}</a>
+  {% endif %}
+</div>
+{%- endmacro %}
+
+
+{# ---- パーツサブページ共通ラッパー ---------------------------------
+   num             : サブタイトル番号（例: "01"）
+   title           : h1 タイトル（HTML エンティティ可）
+   bg              : 背景色（省略時は section--white クラスを付与）
+   breadcrumbLabel : パンくず末尾テキスト（省略時は title を使用）
+   シングルトン：ページに1回使用
+   用法: {% call partsSubPage("01", "Typography") %}...{% endcall %}
+   ------------------------------------------------------------ #}
+{% macro partsSubPage(num, title, bg="", breadcrumbLabel="") %}
+<section class="section{% if not bg %} section--white{% endif %}"
+  style="padding-top: calc(var(--header-height) + 60px){% if bg %};background:{{ bg }}{% endif %}">
+  <div class="container">
+    <div class="breadcrumb">
+      <a href="/parts/">← パーツ集</a>
+      <span class="breadcrumb__sep">/</span>
+      <span>{{ breadcrumbLabel if breadcrumbLabel else title }}</span>
+    </div>
+    <div class="section-header">
+      <span class="section-header__subtitle">{{ num }}</span>
+      <h1 class="section-header__title">{{ title | safe }}</h1>
+    </div>
+    <div class="fade-in-section">
+      {{ caller() }}
+    </div>
+  </div>
+</section>
+{%- endmacro %}
+
+
+{# ---- パーツ統計アイテム ----------------------------------------
+   number : 数値（文字列でも可）
+   label  : ラベルテキスト
+   ------------------------------------------------------------ #}
+{% macro partsStatItem(number, label) %}
+<div class="parts-stat">
+  <span class="parts-stat__number">{{ number }}</span>
+  <p class="parts-stat__label">{{ label }}</p>
+</div>
+{%- endmacro %}
+
+
+{# ---- パーツカテゴリーカード -------------------------------------
+   num   : 番号ラベル（例: "01 / Typography"）
+   title : カテゴリー名
+   desc  : 説明文
+   url   : リンク先
+   theme : "" (デフォルト) / "dark" (Effects) / "highlight" (Components)
+   ------------------------------------------------------------ #}
+{% macro partsCategoryCard(num, title, desc, url, theme="") %}
+{% if theme == "dark" %}
+<a href="{{ url }}" class="parts-category-card" style="border-color:rgba(0,198,255,0.2);background:linear-gradient(135deg,#0f172a,#1e293b);color:white">
+  <div class="parts-category-card__num" style="color:var(--color-secondary)">{{ num }}</div>
+  <div class="parts-category-card__title" style="color:white">{{ title }}</div>
+  <p class="parts-category-card__desc" style="color:#94a3b8">{{ desc }}</p>
+  <span class="parts-category-card__link" style="color:var(--color-secondary)">詳しく見る →</span>
+</a>
+{% elif theme == "highlight" %}
+<a href="{{ url }}" class="parts-category-card" style="border-color:rgba(2,93,204,0.15);background:linear-gradient(135deg,#f0f9ff,#e0f2fe)">
+  <div class="parts-category-card__num" style="color:var(--color-primary)">{{ num }}</div>
+  <div class="parts-category-card__title">{{ title }}</div>
+  <p class="parts-category-card__desc">{{ desc }}</p>
+  <span class="parts-category-card__link" style="color:var(--color-primary)">詳しく見る →</span>
+</a>
+{% else %}
+<a href="{{ url }}" class="parts-category-card">
+  <div class="parts-category-card__num">{{ num }}</div>
+  <div class="parts-category-card__title">{{ title }}</div>
+  <p class="parts-category-card__desc">{{ desc }}</p>
+  <span class="parts-category-card__link">詳しく見る →</span>
+</a>
+{% endif %}
+{%- endmacro %}
+
+
+{# ---- フォントブロック ------------------------------------------
+   name   : フォント名ラベル
+   sample : サンプルメインテキスト（HTML可）
+   cls    : font クラス名（font-sans / font-english / font-mono）
+   sub    : サブテキスト（小さいspan、省略可）
+   desc   : フォント説明文（省略可）
+   ------------------------------------------------------------ #}
+{% macro typoFontBlock(name, sample, cls, sub="", desc="") %}
+<div class="typo-font-block">
+  <div class="typo-font-name">{{ name }}</div>
+  <div class="typo-font-sample {{ cls }}">
+    {{ sample | safe }}
+    {% if sub %}<br><span style="font-size:0.7em;opacity:0.7">{{ sub }}</span>{% endif %}
+  </div>
+  {% if desc %}<div class="typo-font-desc">{{ desc }}</div>{% endif %}
+</div>
+{%- endmacro %}
+
+
+{# ---- タイプスケール行 -------------------------------------------
+   label : スケール名（4xl, 3xl, ..., xs）
+   size  : ピクセルサイズ（表示用）
+   text  : サンプルテキスト
+   style : ts-sample への追加インラインスタイル
+   ------------------------------------------------------------ #}
+{% macro typoScaleRow(label, size, text, style="") %}
+<div class="typo-scale-row">
+  <span class="ts-label">{{ label }}</span>
+  <span class="ts-size">{{ size }}</span>
+  <span class="ts-sample"{% if style %} style="{{ style }}"{% endif %}>{{ text }}</span>
+</div>
+{%- endmacro %}
+
+
+{# ---- カラースウォッチ -------------------------------------------
+   hexLabel : hex値または表示ラベル（Gradient など）
+   name     : カラー名
+   style    : color-swatch-large へのインラインスタイル（background 等）
+   ------------------------------------------------------------ #}
+{% macro colorSwatch(hexLabel, name, style="") %}
+<div class="color-swatch-large"{% if style %} style="{{ style }}"{% endif %}>
+  <span class="color-swatch-hex">{{ hexLabel }}</span>
+  <span class="color-swatch-name">{{ name }}</span>
+</div>
+{%- endmacro %}
+
+
+{# ---- モーションアイテム ----------------------------------------
+   title : モーション名
+   desc  : 説明文
+   code  : コードスニペット（HTML エンティティ可）
+   デモコンテンツは caller() で渡す
+   用法: {% call motionItem("Float", "説明", "animation: ...") %}...{% endcall %}
+   ------------------------------------------------------------ #}
+{% macro motionItem(title, desc, code) %}
+<div class="motion-item">
+  <div class="motion-demo">
+    {{ caller() }}
+  </div>
+  <div class="motion-info">
+    <h3 class="motion-title">{{ title }}</h3>
+    <p class="motion-desc">{{ desc }}</p>
+    <code class="motion-code">{{ code | safe }}</code>
+  </div>
+</div>
+{%- endmacro %}

@@ -1,0 +1,30 @@
+{# cta-basic — CTA セクション
+   ─────────────────────────────────────
+   YAML パラメータ:
+     title       - 見出し（必須）
+     text        - 説明テキスト（HTML可）
+     linkUrl     - ボタンのリンク先
+     linkText    - ボタンのラベル
+     gradient    - 背景グラデーション（default: linear-gradient(135deg,#eff6ff,#f0f9ff)）
+     style       - CSS変数の上書き
+
+   CSS 調整変数:
+     --cta-basic-padding    : セクション余白（default: 5rem 0）
+     --cta-basic-title-size : 見出しサイズ（default: 2rem）
+     --cta-basic-btn-bg     : ボタン背景色（default: #025DCC）
+     --cta-basic-btn-color  : ボタン文字色（default: white）
+     --cta-basic-btn-radius : ボタン角丸（default: 12px）
+   ───────────────────────────────────── #}
+<section class="cta-basic{% if section.extraClass %} {{ section.extraClass }}{% endif %}" style="background:{{ section.gradient | default('linear-gradient(135deg,#eff6ff,#f0f9ff)') }};{{ section.style }}">
+  <div class="container">
+    <div class="cta-basic__inner fade-in-section">
+      <h2 class="cta-basic__title">{{ section.title }}</h2>
+      {% if section.text %}
+      <p class="cta-basic__text">{{ section.text | safe }}</p>
+      {% endif %}
+      {% if section.linkUrl and section.linkText %}
+      <a href="{{ section.linkUrl }}" class="cta-basic__btn">{{ section.linkText }}</a>
+      {% endif %}
+    </div>
+  </div>
+</section>

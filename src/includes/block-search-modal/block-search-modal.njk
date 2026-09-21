@@ -1,0 +1,20 @@
+{# block-search-modal.njk
+   全文検索モーダル（Pagefind）
+   ================================================================
+   searchModal()   : モーダル本体。ページに1つだけ配置する。
+   searchTrigger() : 検索ボタン。ヘッダー等に配置する。
+   ================================================================ #}
+{% macro searchModal() %}
+<div data-search-modal aria-hidden="true">
+  <div data-search-modal-backdrop></div>
+  <div data-search-modal-content>
+    <div data-search-modal-ui></div>
+  </div>
+</div>
+{%- endmacro %}
+
+{% macro searchTrigger(label="検索") %}
+<button data-search-trigger type="button" aria-label="{{ label }}">
+  <i data-lucide="search"></i>
+</button>
+{%- endmacro %}

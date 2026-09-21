@@ -1,0 +1,37 @@
+{# ── search-widgets section ────────────────────────────────────────────────
+   検索ウィジェット（block-search-bar）等のデモを配置するセクション
+   ────────────────────────────────────────────────────────────────────────── #}
+{% from "block-search-bar/block-search-bar.njk" import searchBar %}
+
+<main class="article-page">
+  <div class="article-page__hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">ホーム</a>
+        <span class="breadcrumb__sep">›</span>
+        <span>{{ title }}</span>
+      </div>
+      <h1 class="article-page__title">{{ title }}</h1>
+      {% if lead %}
+        <p class="article-page__lead">{{ lead }}</p>
+      {% endif %}
+    </div>
+  </div>
+  <div class="article-page__body">
+    <div class="container">
+      <div class="widget-demo-block" style="max-width: 800px; margin: 0 auto; padding: 2rem 0;">
+        <section class="widget-demo">
+          <header class="widget-demo__header" style="margin-bottom: 1.5rem;">
+            <h2 class="widget-demo__title" style="margin-bottom: 0.5rem;">インライン検索バー</h2>
+            <p style="color: var(--color-text-muted, #666); font-size: 0.9rem; line-height: 1.6;">
+              ページ内に直接埋め込むことができるフル機能の検索バーコンポーネントです。<br>
+              <code>data-search-bar</code> 属性を持つ要素に Pagefind UI が自動的にマウントされます。
+            </p>
+          </header>
+          
+          {{ searchBar("demo-inline-search") }}
+        </section>
+      </div>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,41 @@
+{# ── card-stance section ─────────────────────────────────────────────────
+   stanceCard カードのリストを出力する。
+   Lucide アイコン + タイトル + 本文の横並びカード（スタンス・姿勢の表明）。
+
+   主な用途: 制作方針・ポリシー・ブランドスタンスの紹介。
+
+   見た目のイメージ:
+     ┌──────────────────────────────────┐
+     │  [section-header]                                                  │
+     │  ┌──────────────────────────────┐  │
+     │  │ [icon] │ タイトル                                         │  │
+     │  │        │ 本文テキスト...                                  │  │
+     │  └──────────────────────────────┘  │
+     │  ┌──────────────────────────────┐  │
+     │  │ [icon] │ タイトル                                         │  │
+     │  │        │ 本文テキスト...                                  │  │
+     │  └──────────────────────────────┘  │
+     └──────────────────────────────────┘
+
+   セクションパラメータ:
+     section.sectionClass : 外側 <section> の追加 CSS クラス（省略時: "section--stance"）
+     section.heading      : sectionHeader の上段テキスト（省略時はヘッダーなし）
+     section.subheading   : sectionHeader の下段テキスト
+     section.dark         : sectionHeader をダーク表示にするか（省略時: false）
+     section.items[]      : カードデータ配列
+       item.icon  : Lucide アイコン名（例: "shield-off", "book-open"）
+       item.title : スタンスのタイトル
+       item.body  : スタンスの説明文
+   ──────────────────────────────────────────────────────────────────── #}
+{% from "block-card-stance/block-card-stance.njk" import stanceCard %}
+{% from "components/macros.njk" import sectionHeader %}
+<section class="section {{ section.sectionClass or 'section--stance' }}">
+  <div class="container">
+    {% if section.heading %}{{ sectionHeader(section.heading, section.subheading or "", section.dark) }}{% endif %}
+    <div class="stance-list">
+      {% for item in section.items %}
+        {{ stanceCard(item.icon, item.title, item.body) }}
+      {% endfor %}
+    </div>
+  </div>
+</section>

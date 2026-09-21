@@ -1,0 +1,40 @@
+{# ── hero-particle section ────────────────────────────────────────────────
+   heroParticle マクロを使ったテキストパーティクルヒーローを出力する。
+   テキストをパーティクル化し、マウスインタラクション付きで表示。
+
+   主な用途: ダーク背景のインタラクティブなファーストビュー・デモセクション。
+             同一ページに複数配置する場合は section.id を異なる値にすること。
+
+   見た目のイメージ:
+     ┌───────────────────────┐（ダーク背景）
+     │  subtitle テキスト（小さめ）                 │
+     │                                              │
+     │   T E X T（大きなパーティクル文字）          │
+     │   ※マウスを近づけると粒子が反発             │
+     │   ※離れると元の形に戻る                     │
+     └───────────────────────┘
+
+   セクションパラメータ:
+     section.text       : パーティクル化するテキスト（必須）
+     section.subtitle   : 上部の小見出しテキスト（省略可）
+     section.color      : パーティクル色（省略時: CSS の --color-primary を使用）
+     section.fontSize   : テキストサイズ（省略時: "15vw"）
+     section.fontWeight : フォントウェイト（省略時: "700"）
+     section.fontFamily : フォントファミリー（省略時: CSS 継承）
+     section.height     : セクション高さ（省略時: "100vh"）
+     section.bg         : 背景色（省略時: "#0b0b0f"）
+     section.id         : 同一ページ内に複数配置する場合の一意 ID（省略時: "main"）
+                          2つ目以降は必ず異なる値を指定すること
+   ──────────────────────────────────────────────────────────────────── #}
+{% from "layout-hero-particle/layout-hero-particle.njk" import heroParticle %}
+{{ heroParticle(
+  text=section.text,
+  subtitle=section.subtitle or "",
+  color=section.color or "",
+  fontSize=section.fontSize or "15vw",
+  fontWeight=section.fontWeight or "700",
+  fontFamily=section.fontFamily or "",
+  height=section.height or "100vh",
+  bg=section.bg or "#0b0b0f",
+  id=section.id or "main"
+) }}

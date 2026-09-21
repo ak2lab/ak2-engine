@@ -1,0 +1,283 @@
+{
+  "version": 1,
+  "repo": "https://raw.githubusercontent.com/aidev2007/ak2-recipes/main",
+  "sections": {
+    "card-grid-basic": {
+      "description": "カードグリッド。機能紹介やカタログ。",
+      "files": [
+        "card-grid-basic.njk",
+        "card-grid-basic.css"
+      ]
+    },
+    "cta-basic": {
+      "description": "コールトゥアクション。ページ末尾の誘導。",
+      "files": [
+        "cta-basic.njk",
+        "cta-basic.css"
+      ]
+    },
+    "faq-basic": {
+      "description": "FAQ アコーディオン。よくある質問。",
+      "files": [
+        "faq-basic.njk",
+        "faq-basic.css"
+      ]
+    },
+    "hero-basic": {
+      "description": "ヒーローセクション。ファーストビュー用。",
+      "files": [
+        "hero-basic.njk",
+        "hero-basic.css"
+      ]
+    },
+    "logo-cloud-basic": {
+      "description": "ロゴクラウド。取引先・掲載実績。",
+      "files": [
+        "logo-cloud-basic.njk",
+        "logo-cloud-basic.css"
+      ]
+    },
+    "pricing-basic": {
+      "description": "料金プラン表。SaaS・サービス紹介。",
+      "files": [
+        "pricing-basic.njk",
+        "pricing-basic.css"
+      ]
+    },
+    "stats-basic": {
+      "description": "数字ハイライト。実績・統計の訴求。",
+      "files": [
+        "stats-basic.njk",
+        "stats-basic.css"
+      ]
+    },
+    "testimonial-basic": {
+      "description": "お客様の声。レビュー・推薦。",
+      "files": [
+        "testimonial-basic.njk",
+        "testimonial-basic.css"
+      ]
+    },
+    "text-basic": {
+      "description": "汎用テキスト。挨拶文・会社概要・自由記述。",
+      "files": [
+        "text-basic.njk",
+        "text-basic.css"
+      ]
+    },
+    "timeline-basic": {
+      "description": "タイムライン。利用の流れ・沿革。",
+      "files": [
+        "timeline-basic.njk",
+        "timeline-basic.css"
+      ]
+    },
+    "banner-basic": {
+      "description": "お知らせ・告知バナー。",
+      "files": [
+        "banner-basic.njk",
+        "banner-basic.css"
+      ]
+    },
+    "contact-basic": {
+      "description": "お問い合わせフォーム。",
+      "files": [
+        "contact-basic.njk",
+        "contact-basic.css"
+      ]
+    },
+    "feature-list-basic": {
+      "description": "機能一覧。アイコン+説明の縦リスト。",
+      "files": [
+        "feature-list-basic.njk",
+        "feature-list-basic.css"
+      ]
+    },
+    "gallery-basic": {
+      "description": "写真ギャラリー。実績・作品集。",
+      "files": [
+        "gallery-basic.njk",
+        "gallery-basic.css"
+      ]
+    },
+    "media-basic": {
+      "description": "画像+テキスト横並び。サービス紹介・コンセプト。",
+      "files": [
+        "media-basic.njk",
+        "media-basic.css"
+      ]
+    },
+    "table-basic": {
+      "description": "比較表・スペック表。",
+      "files": [
+        "table-basic.njk",
+        "table-basic.css"
+      ]
+    },
+    "team-basic": {
+      "description": "チーム・スタッフ紹介。",
+      "files": [
+        "team-basic.njk",
+        "team-basic.css"
+      ]
+    }
+  },
+  "effects": {
+    "BgEffectAurora": {
+      "description": "オーロラエフェクト",
+      "files": [
+        "bg-effect-aurora.js"
+      ]
+    },
+    "BgEffectCherryBlossom": {
+      "description": "桜吹雪エフェクト",
+      "files": [
+        "bg-effect-cherry-blossom.js"
+      ]
+    },
+    "BgEffectCloud": {
+      "description": "雲エフェクト",
+      "files": [
+        "bg-effect-cloud.js"
+      ]
+    },
+    "BgEffectEmber": {
+      "description": "残り火エフェクト",
+      "files": [
+        "bg-effect-ember.js"
+      ]
+    },
+    "BgEffectFirefly": {
+      "description": "蛍エフェクト",
+      "files": [
+        "bg-effect-firefly.js"
+      ]
+    },
+    "BgEffectGrid": {
+      "description": "グリッドラインエフェクト",
+      "files": [
+        "bg-effect-grid.js"
+      ]
+    },
+    "BgEffectLeaf": {
+      "description": "葉っぱエフェクト",
+      "files": [
+        "bg-effect-leaf.js"
+      ]
+    },
+    "BgEffectLeafFall": {
+      "description": "落ち葉エフェクト",
+      "files": [
+        "bg-effect-leaf-fall.js"
+      ]
+    },
+    "BgEffectLightning": {
+      "description": "稲妻エフェクト",
+      "files": [
+        "bg-effect-lightning.js"
+      ]
+    },
+    "BgEffectMapleLeaf": {
+      "description": "紅葉エフェクト",
+      "files": [
+        "bg-effect-maple-leaf.js"
+      ]
+    },
+    "BgEffectMomiji": {
+      "description": "もみじエフェクト",
+      "files": [
+        "bg-effect-momiji.js"
+      ]
+    },
+    "BgEffectParticle": {
+      "description": "パーティクルエフェクト",
+      "files": [
+        "bg-effect-particle.js"
+      ]
+    },
+    "BgEffectProjectorFlicker": {
+      "description": "プロジェクターフリッカーエフェクト",
+      "files": [
+        "bg-effect-projector-flicker.js"
+      ]
+    },
+    "BgEffectRain": {
+      "description": "雨エフェクト",
+      "files": [
+        "bg-effect-rain.js"
+      ]
+    },
+    "BgEffectRipple": {
+      "description": "波紋エフェクト",
+      "files": [
+        "bg-effect-ripple.js"
+      ]
+    },
+    "BgEffectSakura": {
+      "description": "桜エフェクト",
+      "files": [
+        "bg-effect-sakura.js"
+      ]
+    },
+    "BgEffectShimmer": {
+      "description": "きらめきエフェクト",
+      "files": [
+        "bg-effect-shimmer.js"
+      ]
+    },
+    "BgEffectSnow": {
+      "description": "雪エフェクト",
+      "files": [
+        "bg-effect-snow.js"
+      ]
+    },
+    "BgEffectSparks": {
+      "description": "火花エフェクト",
+      "files": [
+        "bg-effect-sparks.js"
+      ]
+    },
+    "BgEffectStarField": {
+      "description": "星空エフェクト",
+      "files": [
+        "bg-effect-star-field.js"
+      ]
+    },
+    "BgEffectStarSpeed": {
+      "description": "スタースピードエフェクト",
+      "files": [
+        "bg-effect-star-speed.js"
+      ]
+    },
+    "BgEffectStatusUp": {
+      "description": "ステータスアップエフェクト",
+      "files": [
+        "bg-effect-status-up.js"
+      ]
+    },
+    "BgEffectSteam": {
+      "description": "蒸気エフェクト",
+      "files": [
+        "bg-effect-steam.js"
+      ]
+    },
+    "BgEffectVintageFilm": {
+      "description": "ヴィンテージフィルムエフェクト",
+      "files": [
+        "bg-effect-vintage-film.js"
+      ]
+    },
+    "BgEffectWave": {
+      "description": "波エフェクト",
+      "files": [
+        "bg-effect-wave.js"
+      ]
+    },
+    "BgEffectWaveRipple": {
+      "description": "波紋ウェーブエフェクト",
+      "files": [
+        "bg-effect-wave-ripple.js"
+      ]
+    }
+  }
+}

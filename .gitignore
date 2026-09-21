@@ -1,0 +1,9 @@
+node_modules/
+sandbox/_site/
+.eleventy.sandbox.js.cache/
+*.log
+.DS_Store
+Thumbs.db
+*.code-workspace
+.npmrc
+.claude/*

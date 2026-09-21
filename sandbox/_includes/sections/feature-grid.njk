@@ -1,0 +1,50 @@
+{# ── feature-grid section ─────────────────────────────────────────────────
+   リンク付きカテゴリーカードのグリッドを出力する。
+   白背景（section--white）。各カードは <a> タグで href へリンク。
+   番号ラベル・タイトル・説明文・リンクテキストで構成。
+
+   主な用途: ページ一覧・機能紹介・コンテンツカタログ
+
+   出力 HTML 構造:
+     <section class="section section--white">
+       <div class="container">
+         <!-- sectionHeader（heading / subheading） -->
+         <div class="parts-category-grid">
+           <a href="{{ href }}" class="parts-category-card [extraClass]">
+             <div class="parts-category-card__num">{{ num }}</div>
+             <div class="parts-category-card__title">{{ title }}</div>
+             <p class="parts-category-card__desc">{{ desc }}</p>
+             <span class="parts-category-card__link">{{ linkText }}</span>
+           </a>
+           <!-- items の数だけ繰り返し -->
+         </div>
+       </div>
+     </section>
+
+   セクションパラメータ:
+     section.heading    : セクション英語ラベル（sectionHeader 上段）
+     section.subheading : セクション日本語見出し（sectionHeader 下段）
+     section.linkText   : カードのリンクテキスト（デフォルト: "テストページを開く →"）
+     section.items[]    : カード配列
+       .num             : 番号ラベル（例: "01"）
+       .title           : カードタイトル
+       .desc            : カード説明文
+       .href            : リンク先 URL
+       .extraClass      : <a> への追加 CSS クラス（省略可）
+   ──────────────────────────────────────────────────────────────────── #}
+{% from "components/macros.njk" import sectionHeader %}
+<section class="section section--white">
+  <div class="container">
+    {{ sectionHeader(section.heading, section.subheading) }}
+    <div class="parts-category-grid">
+      {% for item in section.items %}
+      <a href="{{ item.href }}" class="parts-category-card{% if item.extraClass %} {{ item.extraClass }}{% endif %}">
+        <div class="parts-category-card__num">{{ item.num }}</div>
+        <div class="parts-category-card__title">{{ item.title }}</div>
+        <p class="parts-category-card__desc">{{ item.desc }}</p>
+        <span class="parts-category-card__link">{{ section.linkText | default("テストページを開く →") }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>

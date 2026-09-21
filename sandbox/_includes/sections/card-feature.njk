@@ -1,0 +1,38 @@
+{# ── card-feature section ────────────────────────────────────────────────
+   featureItem カードのグリッドを出力する（デフォルト: 白背景）。
+   Lucide アイコン + タイトル + テキストの縦積みカード群。
+
+   主な用途: 機能紹介・特徴列挙（白背景の明るいセクション）。
+
+   見た目のイメージ:
+     ┌─────────────────────────────────────┐
+     │  [section-header: heading / subheading]                                  │
+     │  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────┐  │
+     │  │ Icon       │  │ Icon       │  │ Icon       │  │ Icon       │  │
+     │  │Title       │  │Title       │  │Title       │  │Title       │  │
+     │  │ text       │  │ text       │  │ text       │  │ text       │  │
+     │  └──────┘  └──────┘  └──────┘  └──────┘  │
+     └─────────────────────────────────────┘
+
+   セクションパラメータ:
+     section.sectionClass : 外側 <section> の追加 CSS クラス（省略時: "section--white"）
+     section.heading      : sectionHeader の上段テキスト（省略時はヘッダーなし）
+     section.subheading   : sectionHeader の下段テキスト
+     section.dark         : sectionHeader をダーク表示にするか（省略時: false）
+     section.items[]      : カードデータ配列
+       item.icon  : Lucide アイコン名（例: "zap", "layers"）
+       item.title : カードタイトル
+       item.text  : カード本文テキスト
+   ──────────────────────────────────────────────────────────────────── #}
+{% from "block-card-feature/block-card-feature.njk" import featureItem %}
+{% from "components/macros.njk" import sectionHeader %}
+<section class="section {{ section.sectionClass or 'section--white' }}">
+  <div class="container">
+    {% if section.heading %}{{ sectionHeader(section.heading, section.subheading or "", section.dark) }}{% endif %}
+    <div class="card-grid">
+      {% for item in section.items %}
+        {{ featureItem(item.icon, item.title, item.text) }}
+      {% endfor %}
+    </div>
+  </div>
+</section>

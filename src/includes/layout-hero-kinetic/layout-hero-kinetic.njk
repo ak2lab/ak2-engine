@@ -1,0 +1,94 @@
+{# ================================================================
+   layout-hero-kinetic.njk
+   AK² Lab キネティック風ヒーロー マクロ集
+   ================================================================
+   使い方:
+     {% from "layout-hero-kinetic/layout-hero-kinetic.njk" import heroLogo, heroContent, heroWave, pageHero %}
+   ================================================================ #}
+
+
+{# ---- ヒーローロゴ ----------------------------------------------
+   SVGコンテンツは呼び出し元で指定する（caller() パターン）
+   用法: {% call heroLogo() %}<svg>...</svg>{% endcall %}
+   ------------------------------------------------------------ #}
+{% macro heroLogo() %}
+<div class="hero-logo-container float-animation" style="animation-delay:.5s">
+  {{ caller() }}
+</div>
+{%- endmacro %}
+
+
+{# ---- ヒーローコンテンツ ----------------------------------------
+   copies    : [{headline, en, desc}] ランダムに1つ選択・表示
+   brandName : ブランド名（呼び出し側で site.fullName などを渡す）
+   ------------------------------------------------------------ #}
+{% macro heroContent(copies, brandName="") %}
+<div class="hero-content fade-in-section">
+  <p class="hero-brand-name">{{ brandName | safe }}</p>
+  <h1 class="hero-headline" id="hero-headline">
+    <span class="text-gradient">%HEADLINE%</span>
+  </h1>
+  <p class="hero-concept-en" id="hero-concept-en">%EN%</p>
+  <div class="hero-description" id="hero-desc">%DESC%</div>
+</div>
+<script>(function(){
+  var copies={{ copies | dump | safe }};
+  var c=copies[Math.floor(Math.random()*copies.length)];
+  var hl=document.getElementById('hero-headline');
+  var en=document.getElementById('hero-concept-en');
+  var ds=document.getElementById('hero-desc');
+  if(hl)hl.innerHTML='<span class="text-gradient">'+c.headline+'</span>';
+  if(en)en.textContent=c.en;
+  if(ds)ds.innerHTML=c.desc;
+})();</script>
+{%- endmacro %}
+
+
+{# ---- ヒーロー ウェーブ -----------------------------------------
+   c1-c4  : 4層のwaveのfill色（手前から奥の順）
+   count  : 表示するwave層の数（1〜4）。デフォルト4
+   ※ 波の周期はCSSの min-width:1800px により画面幅に依存しない
+   ------------------------------------------------------------ #}
+{% macro heroWave(c1="rgba(2,93,204,0.05)", c2="rgba(2,93,204,0.10)", c3="rgba(0,198,255,0.05)", c4="var(--color-bg-light)", count=4) %}
+<div class="waves-container" aria-hidden="true">
+  <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+    viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+    <defs>
+      <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"/>
+    </defs>
+    <g class="parallax">
+      <use href="#gentle-wave" x="48" y="0" fill="{{ c1 }}"/>
+      {% if count >= 2 %}<use href="#gentle-wave" x="48" y="3" fill="{{ c2 }}"/>{% endif %}
+      {% if count >= 3 %}<use href="#gentle-wave" x="48" y="5" fill="{{ c3 }}"/>{% endif %}
+      {% if count >= 4 %}<use href="#gentle-wave" x="48" y="7" style="fill: {{ c4 }}"/>{% endif %}
+    </g>
+  </svg>
+</div>
+{%- endmacro %}
+
+
+{# ---- 内部ページヒーロー -----------------------------------------
+   subtitle  : 英語小見出し（シアン・Roboto Mono）
+   title     : h1 大見出し
+   lead      : リード文（HTML可）
+   note      : info アイコン付きメモ（省略可）
+   extraClass: section への追加クラス（省略可）
+   シングルトン：ページに1回使用
+   ------------------------------------------------------------ #}
+{% macro pageHero(subtitle, title, lead, note="", extraClass="") %}
+<section class="section page-hero{% if extraClass %} {{ extraClass }}{% endif %}">
+  <div class="container">
+    <div class="page-hero__inner fade-in-section">
+      <span class="section-header__subtitle">{{ subtitle }}</span>
+      <h1 class="page-hero__title">{{ title }}</h1>
+      <p class="page-hero__lead">{{ lead | safe }}</p>
+      {% if note %}
+      <div class="page-hero__note">
+        <i data-lucide="info" style="width:16px;height:16px;vertical-align:middle;margin-right:6px"></i>
+        {{ note }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{%- endmacro %}

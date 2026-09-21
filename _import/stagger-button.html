@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stagger Typography Button — GSAP 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Noto+Sans+JP:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh;
+    background: #f7f6f2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 56px;
+  }
+  .page-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.2);
+  }
+  .demo-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 32px;
+  }
+</style>
+</head>
+<body>
+
+<p class="page-label">Stagger Typography Button — GSAP 3</p>
+<div class="demo-grid" id="demo"></div>
+
+<script>
+/**
+ * createStaggerButton(text, options)
+ *
+ * ホバー時に文字が1文字ずつ stagger でバウンスする
+ * タイポグラフィ主役のボタン。
+ *
+ * @param {string}  text
+ * @param {object}  [options]
+ * @param {string}  [options.color]       ボタン背景色                              (default: '#111111')
+ * @param {string}  [options.textColor]   テキスト色                                (default: '#ffffff')
+ * @param {string}  [options.fontFamily]  フォント                                  (default: "'Syne', sans-serif")
+ * @param {number}  [options.fontSize]    フォントサイズ px                         (default: 15)
+ * @param {string}  [options.staggerDir]  跳ねる方向 'start'|'center'|'end'|'random' (default: 'start')
+ * @param {number}  [options.bounceY]     跳ね上がり量 px                           (default: -4)
+ * @param {boolean} [options.float]       浮遊アニメーション                        (default: false)
+ * @param {number}  [options.radius]      角丸 px (未指定で高さ比率から自動)        (default: H * 0.40)
+ * @returns {HTMLElement}
+ */
+function createStaggerButton(text, options = {}) {
+  const {
+    color      = '#111111',
+    textColor  = '#ffffff',
+    fontFamily = "'Syne', sans-serif",
+    fontSize   = 15,
+    staggerDir = 'start',
+    bounceY    = -4,
+    float      = false,
+    radius     = null,   // null = 高さから自動計算
+  } = options;
+
+  /* ── ベース色から上端の明色を計算 ────────────────────────── */
+  function hexToHsl(hex) {
+    let rv=parseInt(hex.slice(1,3),16)/255, gv=parseInt(hex.slice(3,5),16)/255, bv=parseInt(hex.slice(5,7),16)/255;
+    const max=Math.max(rv,gv,bv), min=Math.min(rv,gv,bv); let h,s,l=(max+min)/2;
+    if(max===min){h=s=0;}else{const d=max-min;s=l>.5?d/(2-max-min):d/(max+min);switch(max){case rv:h=((gv-bv)/d+(gv<bv?6:0))/6;break;case gv:h=((bv-rv)/d+2)/6;break;case bv:h=((rv-gv)/d+4)/6;break;}}
+    return [h*360,s*100,l*100];
+  }
+  function hslToHex(h,s,l){
+    h/=360;s/=100;l/=100;const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;
+    const f=t=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<.5)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};
+    let rv,gv,bv;if(s===0){rv=gv=bv=l;}else{rv=f(h+1/3);gv=f(h);bv=f(h-1/3);}
+    return'#'+[rv,gv,bv].map(x=>Math.round(x*255).toString(16).padStart(2,'0')).join('');
+  }
+  const [bH, bS, bL] = hexToHsl(color);
+  const colorTop = hslToHex(bH, Math.max(bS - 8, 0), Math.min(bL + 18, 88)); // 上端: 明るめ
+
+  /* ── テキスト幅計測 ──────────────────────────────────────── */
+  const probe = document.createElement('span');
+  Object.assign(probe.style, {
+    position: 'absolute', visibility: 'hidden', whiteSpace: 'nowrap',
+    fontSize: `${fontSize}px`, fontWeight: '700', letterSpacing: '0.14em',
+    textTransform: 'uppercase', fontFamily,
+  });
+  probe.textContent = text;
+  document.body.appendChild(probe);
+  const textW = probe.getBoundingClientRect().width;
+  document.body.removeChild(probe);
+
+  const W = Math.ceil(textW + 36 * 2);
+  const H = fontSize * 3.2;
+  const r = radius !== null ? radius : H * 0.40;  // デフォルトで大きめの丸み
+
+  /* ── ラッパー ─────────────────────────────────────────────── */
+  const wrap = document.createElement('div');
+  Object.assign(wrap.style, {
+    position: 'relative', display: 'inline-flex',
+    alignItems: 'center', justifyContent: 'center',
+    width: `${W}px`, height: `${H}px`,
+    cursor: 'pointer', userSelect: 'none',
+    WebkitTapHighlightColor: 'transparent', flexShrink: '0',
+    overflow: 'hidden',  // shimmer がはみ出さないようにクリップ
+    borderRadius: `${r}px`,
+  });
+
+  /* ── SVG 背景 ─────────────────────────────────────────────── */
+  const ns  = 'http://www.w3.org/2000/svg';
+  const uid = Math.random().toString(36).slice(2, 8);
+
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('width',   W);
+  svg.setAttribute('height',  H);
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  Object.assign(svg.style, {
+    position: 'absolute', inset: '0',
+    overflow: 'visible', pointerEvents: 'none',
+  });
+
+  // グラデーション定義
+  const defs = document.createElementNS(ns, 'defs');
+  defs.innerHTML = `
+    <!-- 背景グラデーション: 上端を明るく -->
+    <linearGradient id="bg-${uid}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="${colorTop}"/>
+      <stop offset="100%" stop-color="${color}"/>
+    </linearGradient>`;
+  svg.appendChild(defs);
+
+  // 背景 rect (グラデーション塗り)
+  const bg = document.createElementNS(ns, 'rect');
+  bg.setAttribute('x', 0); bg.setAttribute('y', 0);
+  bg.setAttribute('width', W); bg.setAttribute('height', H);
+  bg.setAttribute('rx', r); bg.setAttribute('ry', r);
+  bg.setAttribute('fill', `url(#bg-${uid})`);
+  svg.appendChild(bg);
+
+  wrap.appendChild(svg);
+
+  /* ── シマー (キラーン) 要素 ──────────────────────────────── */
+  // wrap の overflow:hidden でクリップされる CSS div
+  const shimmer = document.createElement('div');
+  const shimW   = W * 0.55;  // 光の帯の幅
+  Object.assign(shimmer.style, {
+    position:   'absolute',
+    top:        '0',
+    left:       '0',
+    width:      `${shimW}px`,
+    height:     '100%',
+    background: 'linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.55) 50%, transparent 80%)',
+    transform:  `translateX(${-shimW - 10}px)`,
+    pointerEvents: 'none',
+    zIndex:     '2',
+    willChange: 'transform',
+  });
+  wrap.appendChild(shimmer);
+
+  /* ── 文字を1文字ずつ <span> に分解 ───────────────────────── */
+  const charWrap = document.createElement('div');
+  Object.assign(charWrap.style, {
+    position: 'relative', zIndex: '3',
+    display: 'flex', alignItems: 'center',
+    gap: '0', pointerEvents: 'none',
+  });
+
+  const chars = [...text];
+  const spans = chars.map(ch => {
+    const s = document.createElement('span');
+    Object.assign(s.style, {
+      display: 'inline-block', fontFamily,
+      fontSize: `${fontSize}px`, fontWeight: '700',
+      letterSpacing: '0.14em', textTransform: 'uppercase',
+      color: textColor, lineHeight: '1', willChange: 'transform',
+    });
+    s.textContent = ch === ' ' ? '\u00A0' : ch;
+    charWrap.appendChild(s);
+    return s;
+  });
+
+  wrap.appendChild(charWrap);
+
+  /* ── シマー発火 (ホバー・クリック共用) ─────────────────────
+   *  translateX を -shimW → W+10 へ滑らせる
+   * ──────────────────────────────────────────────────────── */
+  function fireShimmer(fast = false) {
+    gsap.fromTo(shimmer,
+      { x: -shimW - 10 },
+      {
+        x:        W + 10,
+        duration: fast ? 0.38 : 0.60,
+        ease:     'power2.inOut',
+        overwrite: true,
+      }
+    );
+  }
+
+  /* ── 浮遊アニメーション ──────────────────────────────────── */
+  if (float) {
+    gsap.to(wrap, {
+      y:        -5,
+      duration: 2.0 + Math.random() * 0.8,
+      ease:     'sine.inOut',
+      yoyo:     true,
+      repeat:   -1,
+    });
+  }
+
+  /* ── GSAP イベント ───────────────────────────────────────── */
+  let hovered = false;
+  let tl = null;
+
+  wrap.addEventListener('mouseenter', () => {
+    hovered = true;
+    if (tl) tl.kill();
+
+    // ① 文字バウンス stagger
+    tl = gsap.timeline();
+    tl.to(spans, {
+      y: bounceY, duration: 0.20, ease: 'power2.out',
+      stagger: { amount: 0.18, from: staggerDir },
+    })
+    .to(spans, {
+      y: 0, duration: 0.50, ease: 'elastic.out(1, 0.45)',
+      stagger: { amount: 0.18, from: staggerDir },
+    }, '-=0.08');
+
+    // ② SVG スクイッシュ
+    gsap.timeline()
+      .to(bg, {
+        attr: { ry: r * 2.5 }, scaleY: 0.91, scaleX: 1.04,
+        transformOrigin: `${W/2}px ${H/2}px`,
+        duration: 0.14, ease: 'power2.in',
+      })
+      .to(bg, {
+        attr: { ry: r }, scaleY: 1, scaleX: 1,
+        transformOrigin: `${W/2}px ${H/2}px`,
+        duration: 0.55, ease: 'elastic.out(1, 0.40)',
+      });
+
+    // ③ キラーン
+    fireShimmer(false);
+  });
+
+  wrap.addEventListener('mouseleave', () => {
+    hovered = false;
+    if (tl) tl.kill();
+    gsap.to(spans, {
+      y: 0, duration: 0.30, ease: 'power3.out',
+      stagger: { amount: 0.10, from: staggerDir },
+    });
+    gsap.to(bg, {
+      attr: { ry: r }, scaleY: 1, scaleX: 1,
+      transformOrigin: `${W/2}px ${H/2}px`,
+      duration: 0.30, ease: 'power2.out',
+    });
+  });
+
+  // クリック押下
+  wrap.addEventListener('mousedown', () => {
+    gsap.to(spans, {
+      scaleY: 0.7, scaleX: 1.1, y: 4, duration: 0.08,
+      ease: 'power3.in', stagger: { amount: 0.06, from: 'center' },
+    });
+    gsap.to(bg, {
+      scaleY: 0.93, scaleX: 1.04,
+      transformOrigin: `${W/2}px ${H/2}px`,
+      duration: 0.08, ease: 'power3.in',
+    });
+  });
+
+  // クリック離し: 弾ける + キラーン (速め)
+  wrap.addEventListener('mouseup', () => {
+    gsap.to(spans, {
+      scaleY: 1, scaleX: 1, y: 0, duration: 0.55,
+      ease: 'elastic.out(1.2, 0.38)',
+      stagger: { amount: 0.10, from: 'center' },
+    });
+    gsap.to(bg, {
+      scaleY: 1, scaleX: 1,
+      transformOrigin: `${W/2}px ${H/2}px`,
+      duration: 0.50, ease: 'elastic.out(1, 0.40)',
+    });
+    fireShimmer(true);
+  });
+
+  return wrap;
+}
+
+/* ── デモ ─────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  const grid = document.getElementById('demo');
+
+  [
+    { text: 'Get Started',  options: { float: true } },
+    { text: 'Bounce',       options: { color: '#4f46e5', staggerDir: 'center' } },
+    { text: 'Random!',      options: { color: '#be185d', staggerDir: 'random', fontSize: 16 } },
+    { text: 'はじめる',     options: { color: '#0d9488', fontFamily: "'Noto Sans JP', sans-serif", staggerDir: 'end', float: true } },
+    { text: 'タップ',       options: { color: '#b45309', fontFamily: "'Noto Sans JP', sans-serif", staggerDir: 'center', fontSize: 17 } },
+    { text: 'Download',     options: { color: '#18181b', staggerDir: 'end', fontSize: 14 } },
+  ].forEach(({ text, options }) => {
+    grid.appendChild(createStaggerButton(text, options));
+  });
+});
+</script>
+</body>
+</html>

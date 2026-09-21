@@ -1,0 +1,48 @@
+{# card-grid-basic — カードグリッド
+   ─────────────────────────────────────
+   YAML パラメータ:
+     heading     - セクション英語ラベル（省略でヘッダー非表示）
+     subheading  - セクション日本語見出し
+     linkText    - カードのリンクテキスト（default: "詳しく見る →"）
+     style       - CSS変数の上書き
+     items[]     - カードデータ配列
+       item.num        - 番号ラベル（例: "01"）
+       item.title      - カードタイトル
+       item.desc       - カード説明文
+       item.href       - リンク先 URL
+       item.extraClass - 追加CSSクラス
+
+   CSS 調整変数:
+     --card-grid-basic-padding     : セクション余白（default: 5rem 0）
+     --card-grid-basic-bg          : 背景色（default: white）
+     --card-grid-basic-title-size  : 見出しサイズ（default: 1.8rem）
+     --card-grid-basic-label-color : ラベル・番号色（default: #00C6FF）
+     --card-grid-basic-card-bg     : カード背景色（default: white）
+     --card-grid-basic-card-radius : カード角丸（default: 16px）
+     --card-grid-basic-card-min    : カード最小幅（default: 280px）
+     --card-grid-basic-gap         : グリッド間隔（default: 1.5rem）
+   ───────────────────────────────────── #}
+<section class="card-grid-basic{% if section.extraClass %} {{ section.extraClass }}{% endif %}" style="{{ section.style }}">
+  <div class="container">
+    {% if section.heading %}
+    <div class="card-grid-basic__header">
+      <span class="card-grid-basic__label">{{ section.heading }}</span>
+      <h2 class="card-grid-basic__title">{{ section.subheading }}</h2>
+    </div>
+    {% endif %}
+    <div class="card-grid-basic__grid">
+      {% for item in section.items %}
+      <a href="{{ item.href }}" class="card-grid-basic__card{% if item.extraClass %} {{ item.extraClass }}{% endif %}">
+        {% if item.num %}
+        <div class="card-grid-basic__num">{{ item.num }}</div>
+        {% endif %}
+        <div class="card-grid-basic__card-title">{{ item.title }}</div>
+        {% if item.desc %}
+        <p class="card-grid-basic__desc">{{ item.desc }}</p>
+        {% endif %}
+        <span class="card-grid-basic__link">{{ section.linkText | default("詳しく見る →") }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,24 @@
+---
+layout: layouts/base.njk
+---
+<main class="article-page">
+  <div class="article-page__hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">Sandbox</a>
+        <span class="breadcrumb__sep">›</span>
+        <span>{{ doc_group | default("Article") }}</span>
+      </div>
+      {% if doc_group %}<div class="article-page__category">{{ doc_group }}</div>{% endif %}
+      <h1 class="article-page__title">{{ title }}</h1>
+      {% if lead %}<p class="article-page__lead">{{ lead }}</p>{% endif %}
+    </div>
+  </div>
+  <div class="article-page__body">
+    <div class="container">
+      <div class="prose">
+        {{ content | safe }}
+      </div>
+    </div>
+  </div>
+</main>

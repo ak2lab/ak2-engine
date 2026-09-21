@@ -1,0 +1,25 @@
+{# ================================================================
+   effect-cursor-magnetic.njk
+   カスタムカーソル + 磁力エフェクト
+   ================================================================
+   使い方:
+     {% from "effect-cursor-magnetic/effect-cursor-magnetic.njk" import cursorMagnetic %}
+     {{ cursorMagnetic() }}  ← <body> 直下などに1回だけ配置
+
+   カーソルを有効化したいセクション／要素に:
+     data-cursor-area 属性を付与する
+
+   マグネット効果を付与したい要素に:
+     data-magnetic 属性を付与する
+
+   ※ a タグと button タグはマグネット対象外・ホバー状態のみ有効
+   ================================================================ #}
+
+{# ---- カーソル DOM 要素 ------------------------------------------
+   cursor-area-sel : カーソルを有効化するセクションの CSS セレクター（省略可）
+                     省略時は [data-cursor-area] で自動検出
+   ------------------------------------------------------------ #}
+{% macro cursorMagnetic() %}
+<div class="ak2-cursor-dot" id="ak2-cursor-dot" aria-hidden="true"></div>
+<div class="ak2-cursor-ring" id="ak2-cursor-ring" aria-hidden="true"></div>
+{%- endmacro %}

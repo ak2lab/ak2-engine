@@ -1,0 +1,38 @@
+{# ── card-target section ─────────────────────────────────────────────────
+   targetCard カードのグリッドを出力する。
+   アイコン（絵文字または Lucide）+ タイトル + 説明文の縦積みカード。
+
+   主な用途: ターゲットユーザー・利用シーン・対象者の紹介。
+
+   見た目のイメージ:
+     ┌─────────────────────────────────┐
+     │  [section-header]                                                │
+     │  ┌──────┐  ┌──────┐  ┌──────┐            │
+     │  │  🤖        │  │  🏗️      │  │  🎨        │  ← icon   │
+     │  │Title       │  │Title       │  │Title       │            │
+     │  │ desc       │  │ desc       │  │ desc       │            │
+     │  └──────┘  └──────┘  └──────┘            │
+     └─────────────────────────────────┘
+
+   セクションパラメータ:
+     section.sectionClass : 外側 <section> の追加 CSS クラス（省略時: "section--target"）
+     section.heading      : sectionHeader の上段テキスト（省略時はヘッダーなし）
+     section.subheading   : sectionHeader の下段テキスト
+     section.dark         : sectionHeader をダーク表示にするか（省略時: false）
+     section.items[]      : カードデータ配列
+       item.icon  : アイコン（絵文字 or Lucide アイコン名）
+       item.title : ターゲット名（<br> による改行可）
+       item.desc  : ターゲットの説明文
+   ──────────────────────────────────────────────────────────────────── #}
+{% from "block-card-target/block-card-target.njk" import targetCard %}
+{% from "components/macros.njk" import sectionHeader %}
+<section class="section {{ section.sectionClass or 'section--target' }}">
+  <div class="container">
+    {% if section.heading %}{{ sectionHeader(section.heading, section.subheading or "", section.dark) }}{% endif %}
+    <div class="card-grid">
+      {% for item in section.items %}
+        {{ targetCard(item.icon, item.title, item.desc) }}
+      {% endfor %}
+    </div>
+  </div>
+</section>

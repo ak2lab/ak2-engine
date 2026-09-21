@@ -1,0 +1,55 @@
+{# ── card-kinetic section ─────────────────────────────────────────────────
+   kineticCard の 3D ティルトカードグリッドを出力する（デフォルト: 白背景）。
+   ホバーで 3D ティルト・グレア・パララックスが動作するインタラクティブカード。
+
+   主な用途: ポートフォリオ・作品紹介・インタラクティブな特徴紹介。
+
+   見た目のイメージ:
+     ┌─────────────────────────────────────┐
+     │  [section-header]                                                        │
+     │  ┌──────────────┐  ┌──────────────┐      │
+     │  │   [画像]                   │  │   [画像]                   │      │
+     │  │  タイトル                  │  │  タイトル                  │      │
+     │  │ 本文テキスト               │  │ 本文テキスト               │      │
+     │  │ [リンク →]                │  │ [リンク →]                │      │
+     │  └──────────────┘  └──────────────┘      │
+     └─────────────────────────────────────┘
+     ホバー時: 3D 回転 + 光沢（グレア）+ 画像パララックス
+
+   セクションパラメータ:
+     section.sectionClass : 外側 <section> の追加 CSS クラス（省略時: "section--white"）
+     section.heading      : sectionHeader の上段テキスト（省略時はヘッダーなし）
+     section.subheading   : sectionHeader の下段テキスト
+     section.dark         : sectionHeader をダーク表示にするか（省略時: false）
+     section.minWidth     : カードグリッドの最小カード幅（省略時: "300px"）
+     section.gap          : カード間隔（省略時: "40px"）
+     section.items[]      : カードデータ配列
+       item.title    : カードタイトル（必須）
+       item.img      : 画像 URL（省略時: 画像なし）
+       item.imgAlt   : 画像 alt テキスト（省略時: title と同値）
+       item.link     : リンク先 URL（省略時: リンクなし）
+       item.linkText : リンクテキスト（省略時: "詳しく見る →"）
+       item.dark     : ダークテーマ（省略時: false）
+       item.body     : カード本文テキスト（HTML 使用可）
+   ──────────────────────────────────────────────────────────────────── #}
+{% from "block-card-kinetic/block-card-kinetic.njk" import kineticCard, kineticCardGrid %}
+{% from "components/macros.njk" import sectionHeader %}
+<section class="section {{ section.sectionClass or 'section--white' }}">
+  <div class="container">
+    {% if section.heading %}{{ sectionHeader(section.heading, section.subheading or "", section.dark) }}{% endif %}
+    {% call kineticCardGrid(minWidth=section.minWidth or "300px", gap=section.gap or "40px") %}
+      {% for item in section.items %}
+        {% call kineticCard(
+          title=item.title,
+          img=item.img or "",
+          imgAlt=item.imgAlt or "",
+          link=item.link or "",
+          linkText=item.linkText or "詳しく見る →",
+          dark=item.dark or false
+        ) %}
+          {{ item.body | safe }}
+        {% endcall %}
+      {% endfor %}
+    {% endcall %}
+  </div>
+</section>

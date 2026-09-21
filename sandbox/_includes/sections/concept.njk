@@ -1,0 +1,51 @@
+{# ── concept section ─────────────────────────────────────────────────────
+   conceptBlock を使った画像＋テキストの横並びレイアウトを出力する。
+   フロートアニメーション付き画像とテキストエリアの組み合わせ。
+
+   主な用途: 特徴・コンセプト・事例の詳細紹介（ビジュアル重視）。
+             複数の conceptBlock を縦に並べる場合は items 配列に追加する。
+
+   見た目のイメージ:
+     ┌───────────────────────────────────┐
+     │  [section-header]                                                    │
+     │  ┌──────────────┐  ┌──────────────┐  │
+     │  │   画像                     │  │ 見出し（item.title）       │  │
+     │  │ (フロート)                 │  │ 本文テキスト               │  │
+     │  │                            │  │ (body, HTML使用可)         │  │
+     │  │                            │  │ [note テキスト]            │  │
+     │  └──────────────┘  └──────────────┘  │
+     └───────────────────────────────────┘
+     item.pos: "right" の場合、画像が右・テキストが左に反転する。
+
+   セクションパラメータ:
+     section.sectionClass : 外側 <section> の追加 CSS クラス（省略時: "section--concept-detail"）
+     section.heading      : sectionHeader の上段テキスト（省略時はヘッダーなし）
+     section.subheading   : sectionHeader の下段テキスト
+     section.dark         : sectionHeader をダーク表示にするか（省略時: false）
+     section.items[]      : コンセプトブロックデータ配列
+       item.image   : 画像 URL（必須）
+       item.alt     : 画像 alt テキスト（省略時: item.title）
+       item.title   : 見出しテキスト（conceptBlock の heading パラメータ）
+       item.body    : 本文テキスト（HTML 使用可）
+       item.note    : 補足テキスト（省略可）
+       item.pos     : レイアウト方向 "left"（デフォルト）または "right"
+       item.delay   : フロートアニメーション遅延（例: "0.2s"、省略可）
+   ──────────────────────────────────────────────────────────────────── #}
+{% from "block-concept-standard/block-concept-standard.njk" import conceptBlock %}
+{% from "components/macros.njk" import sectionHeader %}
+<section class="section {{ section.sectionClass or 'section--concept-detail' }}">
+  <div class="container">
+    {% if section.heading %}{{ sectionHeader(section.heading, section.subheading or "", section.dark) }}{% endif %}
+    {% for item in section.items %}
+      {{ conceptBlock(
+        image=item.image,
+        alt=item.alt or item.title,
+        heading=item.title,
+        body=item.body,
+        note=item.note or "",
+        pos=item.pos or "left",
+        delay=item.delay or "0s"
+      ) }}
+    {% endfor %}
+  </div>
+</section>

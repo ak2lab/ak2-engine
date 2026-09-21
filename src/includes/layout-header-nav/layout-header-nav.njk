@@ -1,0 +1,109 @@
+{# ================================================================
+   layout-header-nav.njk
+   AK² グローバルヘッダーナビゲーション
+   ================================================================
+   使い方（base.njk から include）:
+     {% include "layout-header-nav/layout-header-nav.njk" %}
+
+   フロントマターパラメータ（すべてオプション）:
+     navGlobalStyle  : "underline"(default) | "pill" | "bracket" | "shift" | "dot"
+     navDrawerStyle  : "circular"(default)  | "slide-down" | "slide-up" | "glass"
+     navToggleStyle  : "geometric"(default) | "magnetic" | "liquid" | "particle"
+     navTogglePos    : "right"(default)     | "left"
+     transparentHeader : true | false(default)
+     navBg           : "glass"(default) | "solid"  ← solid = 完全不透明白背景（暗いヒーロー面に重ねる場合）
+
+   必要なデータ（_data/site.json）:
+     site.logoSvg  : ロゴSVGのHTML文字列（| safe でレンダリング）
+     site.name     : サイト名テキスト
+     site.sub      : ブランドサブテキスト
+     site.logoHref : ロゴクリック先（省略時: "/"）
+
+   必要なデータ（_data/nav.json）:
+     nav : [{label, url, root}] の配列
+   ================================================================ #}
+{% set _navGlobal = navGlobalStyle | default("underline") %}
+{% set _navDrawer = navDrawerStyle | default("circular") %}
+{% set _navToggle = navToggleStyle | default("geometric") %}
+{% set _navTogPos = navTogglePos   | default("right") %}
+{% set _navBg     = navBg         | default("glass") %}
+
+<svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="ak2-nav-gooey">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+      <feBlend in="SourceGraphic" in2="goo" />
+    </filter>
+  </defs>
+</svg>
+
+<nav class="ak2-nav-drawer ak2-nav-drawer--{{ _navDrawer }}" id="ak2-nav-drawer" aria-hidden="true" data-pagefind-ignore>
+  <ul>
+    {% for item in nav %}
+    {% set isActive = (item.root == "/" and page.url == "/") or (item.root != "/" and page.url.startsWith(item.root)) %}
+    <li><a href="{{ item.url }}"{% if isActive %} class="is-active"{% endif %}>{{ item.label }}</a></li>
+    {% endfor %}
+  </ul>
+</nav>
+
+<header class="ak2-nav-header{% if transparentHeader %} is-transparent{% endif %}{% if _navTogPos == "left" %} toggle-pos-left{% endif %}{% if _navBg == "solid" %} nav-bg-solid{% endif %}"
+        id="ak2-nav-header"
+        data-pagefind-ignore
+        data-global="{{ _navGlobal }}"
+        data-drawer="{{ _navDrawer }}"
+        data-toggle="{{ _navToggle }}"
+        data-toggle-pos="{{ _navTogPos }}">
+
+  <a href="{{ site.logoHref | default('/') }}" class="ak2-nav-brand">
+    {{ site.logoSvg | safe }}
+    <span class="ak2-nav-brand__text">
+      <span class="ak2-nav-brand__name">{{ site.name }}</span>
+      <span class="ak2-nav-brand__sub">{{ site.sub }}</span>
+    </span>
+  </a>
+
+  <nav class="ak2-nav-global ak2-nav-global--{{ _navGlobal }}" id="ak2-nav-global" aria-label="グローバルナビゲーション">
+    {% for item in nav %}
+    {% set isActive = (item.root == "/" and page.url == "/") or (item.root != "/" and page.url.startsWith(item.root)) %}
+    {% if _navGlobal == "shift" %}
+    <a href="{{ item.url }}" data-text="{{ item.label }}"{% if isActive %} class="is-active"{% endif %}><span>{{ item.label }}</span></a>
+    {% else %}
+    <a href="{{ item.url }}"{% if isActive %} class="is-active"{% endif %}>{{ item.label }}</a>
+    {% endif %}
+    {% endfor %}
+    {% if _navGlobal == "underline" %}
+    <div class="ak2-nav-indicator ak2-nav-indicator--line"></div>
+    {% endif %}
+    {% if _navGlobal == "pill" %}
+    <div class="ak2-nav-indicator ak2-nav-indicator--pill"></div>
+    {% endif %}
+  </nav>
+
+  {% from "block-search-modal/block-search-modal.njk" import searchTrigger %}
+  {{ searchTrigger() }}
+
+  <div id="ak2-nav-toggle-wrap">
+    {% if _navToggle == "particle" %}
+    <div id="ak2-nav-hybrid-wrap">
+      <button class="ak2-nav-toggle" id="ak2-nav-toggle-btn" aria-label="メニュー" aria-expanded="false">
+        <div class="ak2-nav-toggle-lines ak2-nav-toggle--geometric"><span></span><span></span><span></span></div>
+      </button>
+      <canvas id="ak2-nav-particle-canvas"></canvas>
+    </div>
+    {% elif _navToggle == "magnetic" %}
+    <button class="ak2-nav-toggle ak2-nav-toggle--magnetic-wrapper" id="ak2-nav-toggle-btn" aria-label="メニュー" aria-expanded="false">
+      <div class="ak2-nav-toggle-lines ak2-nav-toggle--magnetic"><span></span><span></span><span></span></div>
+    </button>
+    {% elif _navToggle == "liquid" %}
+    <button class="ak2-nav-toggle" id="ak2-nav-toggle-btn" aria-label="メニュー" aria-expanded="false">
+      <div class="ak2-nav-toggle-lines ak2-nav-toggle--liquid"><span></span><span></span><span></span></div>
+    </button>
+    {% else %}
+    <button class="ak2-nav-toggle" id="ak2-nav-toggle-btn" aria-label="メニュー" aria-expanded="false">
+      <div class="ak2-nav-toggle-lines ak2-nav-toggle--geometric"><span></span><span></span><span></span></div>
+    </button>
+    {% endif %}
+  </div>
+
+</header>

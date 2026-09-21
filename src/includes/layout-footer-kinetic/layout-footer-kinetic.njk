@@ -1,0 +1,54 @@
+{# ================================================================
+   layout-footer-kinetic.njk
+   キネティック風グローバルフッター
+   ================================================================
+   使い方（base.njk から include）:
+     {% include "layout-footer-kinetic/layout-footer-kinetic.njk" %}
+
+   必要なデータ（_data/site.json）:
+     site.logoSvg         : フッター用ロゴSVGのHTML文字列（| safe でレンダリング）
+                            ※ ヘッダーと別SVGにしたい場合は site.footerLogoSvg を使用
+     site.logoHref        : ロゴクリック先（省略時: "/"）
+     site.footerDesc      : フッター説明文（HTML可）
+     site.copyright       : コピーライトテキスト（年号は自動挿入）
+     site.footerAboutLinks: ABOUTカラムのリンク配列（省略可）
+                            [{label: "...", url: "/..."}]
+
+   必要なデータ（_data/nav.json）:
+     nav : [{label, url}] の配列（MENUカラムに使用）
+   ================================================================ #}
+<footer class="site-footer" data-pagefind-ignore>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a href="{{ site.logoHref | default('/') }}" class="footer-logo">
+          {{ (site.footerLogoSvg or site.logoSvg) | safe }}
+        </a>
+        {% if site.footerDesc %}
+        <p class="footer-desc">{{ site.footerDesc | safe }}</p>
+        {% endif %}
+      </div>
+      <div>
+        <h4 class="footer-heading">MENU</h4>
+        <ul class="footer-links">
+          {% for item in nav %}
+          <li><a href="{{ item.url }}">{{ item.label }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% if site.footerAboutLinks %}
+      <div>
+        <h4 class="footer-heading">ABOUT</h4>
+        <ul class="footer-links">
+          {% for link in site.footerAboutLinks %}
+          <li><a href="{{ link.url }}">{{ link.label }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+    <div class="copyright">
+      &copy; <span id="footer-year"></span> {{ site.copyright }}
+    </div>
+  </div>
+</footer>

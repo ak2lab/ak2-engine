@@ -1,0 +1,42 @@
+{# ── contact section ─────────────────────────────────────────────────────
+   contactForm マクロを使ったお問い合わせフォームセクションを出力する。
+   お名前・メール・本文・送信ボタンを含む標準フォーム。
+
+   主な用途: コンタクトページ・サービスページ末尾のお問い合わせ窓口。
+
+   見た目のイメージ:
+     ┌─────────────────────────┐
+     │  [section-header]                                │
+     │  [intro テキスト（省略可）]                      │
+     │  ┌────────────────────┐    │
+     │  │ お名前 [____________]                  │    │
+     │  │ メールアドレス [_________________]     │    │
+     │  │ お問い合わせ内容                       │    │
+     │  │ [________________________________]     │    │
+     │  │            [送信する →]               │    │
+     │  └────────────────────┘    │
+     └─────────────────────────┘
+
+   セクションパラメータ:
+     section.sectionClass : 外側 <section> の追加 CSS クラス（省略時: "section--contact"）
+     section.heading      : sectionHeader の上段テキスト（省略時はヘッダーなし）
+     section.subheading   : sectionHeader の下段テキスト
+     section.dark         : sectionHeader をダーク表示にするか（省略時: false）
+     section.action       : フォームの action 属性（省略時: ""）
+     section.intro        : フォーム上部の紹介テキスト（HTML 使用可、省略可）
+                            contactForm の caller() パターンで渡される
+   ──────────────────────────────────────────────────────────────────── #}
+{% from "block-form-contact/block-form-contact.njk" import contactForm %}
+{% from "components/macros.njk" import sectionHeader %}
+<section class="section {{ section.sectionClass or 'section--contact' }}">
+  <div class="container">
+    {% if section.heading %}{{ sectionHeader(section.heading, section.subheading or "", section.dark) }}{% endif %}
+    {% if section.intro %}
+      {% call contactForm(action=section.action or "") %}
+        <p>{{ section.intro | safe }}</p>
+      {% endcall %}
+    {% else %}
+      {{ contactForm(action=section.action or "") }}
+    {% endif %}
+  </div>
+</section>

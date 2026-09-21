@@ -1,0 +1,78 @@
+/* card-grid-basic — カードグリッド
+   ── 調整ポイント ── */
+.card-grid-basic {
+  --card-grid-basic-padding: 5rem 0;
+  --card-grid-basic-bg: white;
+  --card-grid-basic-title-size: 1.8rem;
+  --card-grid-basic-label-color: var(--color-secondary, #00C6FF);
+  --card-grid-basic-card-bg: white;
+  --card-grid-basic-card-radius: 16px;
+  --card-grid-basic-card-min: 280px;
+  --card-grid-basic-gap: 1.5rem;
+
+  padding: var(--card-grid-basic-padding);
+  background: var(--card-grid-basic-bg);
+}
+.card-grid-basic__header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.card-grid-basic__label {
+  display: inline-block;
+  font-family: var(--font-english, "Lato", sans-serif);
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--card-grid-basic-label-color);
+  margin-bottom: 0.5rem;
+}
+.card-grid-basic__title {
+  font-size: var(--card-grid-basic-title-size);
+  font-weight: 700;
+  color: var(--color-dark, #1e293b);
+}
+.card-grid-basic__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--card-grid-basic-card-min), 1fr));
+  gap: var(--card-grid-basic-gap);
+}
+.card-grid-basic__card {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  background: var(--card-grid-basic-card-bg);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: var(--card-grid-basic-card-radius);
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.card-grid-basic__card:hover {
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+.card-grid-basic__num {
+  font-family: var(--font-english, "Lato", sans-serif);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--card-grid-basic-label-color);
+  margin-bottom: 0.75rem;
+}
+.card-grid-basic__card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-dark, #1e293b);
+  margin-bottom: 0.75rem;
+}
+.card-grid-basic__desc {
+  font-size: 0.9rem;
+  color: var(--color-text, #475569);
+  line-height: 1.7;
+  flex: 1;
+  margin-bottom: 1rem;
+}
+.card-grid-basic__link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-primary, #025DCC);
+}

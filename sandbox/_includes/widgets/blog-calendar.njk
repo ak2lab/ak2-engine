@@ -1,0 +1,4 @@
+{# widget: blog-calendar — 月間カレンダー #}
+{% from "block-blog-calendar/block-blog-calendar.njk" import blogCalendar %}
+{% set calData = widget.calendarMonth | buildCalendar(collections[widget.collection]) %}
+{{ blogCalendar(calData) }}

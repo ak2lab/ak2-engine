@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>layout-header-nav minimal sample</title>
+  <style>
+    :root {
+      --header-height: 80px;
+      --container-width: 1120px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: #334155;
+      font-family: Arial, sans-serif;
+      line-height: 1.8;
+      background: #f8fafc;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 20;
+      width: 100%;
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 0 max(24px, calc((100% - var(--container-width)) / 2));
+      background: #ffffff;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.1);
+    }
+
+    .site-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    .site-brand__mark {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: #025dcc;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .global-nav {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .global-nav a {
+      position: relative;
+      padding: 8px 0;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 700;
+      transition: color 0.2s;
+    }
+
+    .global-nav a:hover,
+    .global-nav a.is-active {
+      color: #0f172a;
+    }
+
+    .global-nav a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 2px;
+      background: #025dcc;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s ease;
+    }
+
+    .global-nav a:hover::after,
+    .global-nav a.is-active::after {
+      transform: scaleX(1);
+    }
+
+    .menu-button {
+      display: none;
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      border-radius: 10px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .menu-button__lines {
+      position: relative;
+      display: block;
+      width: 28px;
+      height: 20px;
+      margin: 0 auto;
+    }
+
+    .menu-button__lines span {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      border-radius: 999px;
+      background: #0f172a;
+      transition: top 0.25s ease, transform 0.25s ease, opacity 0.2s ease;
+    }
+
+    .menu-button__lines span:nth-child(1) {
+      top: 0;
+    }
+
+    .menu-button__lines span:nth-child(2) {
+      top: 8.5px;
+    }
+
+    .menu-button__lines span:nth-child(3) {
+      top: 17px;
+    }
+
+    .menu-button.is-open .menu-button__lines span:nth-child(1) {
+      top: 8.5px;
+      transform: rotate(45deg);
+      background: #025dcc;
+    }
+
+    .menu-button.is-open .menu-button__lines span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .menu-button.is-open .menu-button__lines span:nth-child(3) {
+      top: 8.5px;
+      transform: rotate(-45deg);
+      background: #025dcc;
+    }
+
+    .drawer-nav {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: grid;
+      place-items: center;
+      background: #fff;
+      clip-path: circle(0 at calc(100% - 48px) 40px);
+      pointer-events: none;
+      transition: clip-path 0.55s cubic-bezier(0.7, 0, 0.2, 1);
+    }
+
+    .drawer-nav.is-open {
+      clip-path: circle(150% at calc(100% - 48px) 40px);
+      pointer-events: auto;
+    }
+
+    .drawer-nav__list {
+      display: grid;
+      gap: 24px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      text-align: center;
+    }
+
+    .drawer-nav a {
+      color: #0f172a;
+      font-size: 36px;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+    }
+
+    .drawer-nav a:hover,
+    .drawer-nav a.is-active {
+      color: #025dcc;
+    }
+
+    main {
+      padding-top: var(--header-height);
+    }
+
+    .hero {
+      min-height: 72vh;
+      display: grid;
+      align-content: center;
+      max-width: var(--container-width);
+      margin: 0 auto;
+      padding: 72px 24px;
+    }
+
+    .hero h1 {
+      max-width: 720px;
+      margin: 0 0 20px;
+      color: #0f172a;
+      font-size: clamp(40px, 7vw, 80px);
+      line-height: 1;
+    }
+
+    .hero p {
+      max-width: 620px;
+      margin: 0;
+      color: #64748b;
+      font-size: 16px;
+    }
+
+    @media (max-width: 800px) {
+      .site-header {
+        padding: 0 20px;
+      }
+
+      .global-nav {
+        display: none;
+      }
+
+      .menu-button {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="drawer-nav" id="drawer-nav" aria-hidden="true">
+    <ul class="drawer-nav__list">
+      <li><a class="is-active" href="#">Index</a></li>
+      <li><a href="#">Concept</a></li>
+      <li><a href="#">Docs</a></li>
+      <li><a href="#">Interaction</a></li>
+      <li><a href="#">Blog</a></li>
+    </ul>
+  </nav>
+
+  <header class="site-header">
+    <a class="site-brand" href="#">
+      <span class="site-brand__mark">AK</span>
+      <span>AK2 Sample</span>
+    </a>
+
+    <nav class="global-nav" aria-label="Global navigation">
+      <a class="is-active" href="#">Index</a>
+      <a href="#">Concept</a>
+      <a href="#">Docs</a>
+      <a href="#">Interaction</a>
+      <a href="#">Blog</a>
+    </nav>
+
+    <button class="menu-button" id="menu-button" type="button" aria-label="メニュー" aria-expanded="false">
+      <span class="menu-button__lines" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
+    </button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Minimal header navigation sample</h1>
+      <p>Desktop shows the underline global navigation. Widths of 800px and below show the right-side geometric hamburger with a circular drawer.</p>
+    </section>
+  </main>
+
+  <script>
+    const button = document.getElementById('menu-button');
+    const drawer = document.getElementById('drawer-nav');
+
+    button.addEventListener('click', () => {
+      const isOpen = button.classList.toggle('is-open');
+      drawer.classList.toggle('is-open', isOpen);
+      button.setAttribute('aria-expanded', String(isOpen));
+      drawer.setAttribute('aria-hidden', String(!isOpen));
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+    });
+
+    drawer.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        button.classList.remove('is-open');
+        drawer.classList.remove('is-open');
+        button.setAttribute('aria-expanded', 'false');
+        drawer.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      });
+    });
+  </script>
+</body>
+</html>

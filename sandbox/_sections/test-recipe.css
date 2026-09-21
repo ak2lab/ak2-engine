@@ -1,0 +1,25 @@
+/* test-recipe — v2 アーキテクチャ テスト用 */
+.test-recipe {
+  padding: 3rem 0;
+  background: var(--color-bg-secondary, #f5f5f5);
+}
+.test-recipe__title {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+.test-recipe__desc {
+  color: var(--color-text-secondary, #666);
+  margin-bottom: 1.5rem;
+}
+.test-recipe__list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.test-recipe__item {
+  padding: 1rem;
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: var(--radius-sm, 4px);
+}

@@ -1,0 +1,47 @@
+/* ================================================================
+   layout-hero-particle.css
+   テキストパーティクル ヒーローセクション
+   ================================================================ */
+
+.ak2-hero-particle {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.ak2-hero-particle__canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.ak2-hero-particle__content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  pointer-events: none;
+}
+
+.ak2-hero-particle__subtitle {
+  font-size: 0.75rem;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 24px;
+  opacity: 0.85;
+}
+
+.ak2-hero-particle__title {
+  /* opacity: 0 はインラインで設定。Canvas にサンプリング後も非表示のまま */
+  line-height: 1;
+  user-select: none;
+  /* color は JS でも参照しないので任意の色を指定可 */
+  color: transparent;
+}
+
+/* スマホでもキャンバスを表示（共鳴アニメーションで常時動作） */

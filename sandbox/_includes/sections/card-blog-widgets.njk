@@ -1,0 +1,34 @@
+{# ── card-blog-widgets section ────────────────────────────────────────────────
+   ブログウィジェットを動的に表示する汎用セクション。
+   section.widgets[] の type 値から widgets/[type].njk を動的にインクルードする。
+   ────────────────────────────────────────────────────────────────────────── #}
+<main class="article-page">
+  <div class="article-page__hero">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/">ホーム</a>
+        <span class="breadcrumb__sep">›</span>
+        <span>{{ title }}</span>
+      </div>
+      <h1 class="article-page__title">{{ title }}</h1>
+      {% if lead %}
+        <p class="article-page__lead">{{ lead }}</p>
+      {% endif %}
+    </div>
+  </div>
+  <div class="article-page__body">
+    <div class="container">
+      <div class="widget-demo-grid">
+        {% for widget in section.widgets %}
+        <section class="widget-demo">
+          <h2 class="widget-demo__title">{{ widget.title }}</h2>
+          {% if widget.text %}
+            <p class="widget-demo__text">{{ widget.text | safe }}</p>
+          {% endif %}
+          {% include "widgets/" + widget.type + ".njk" ignore missing %}
+        </section>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</main>

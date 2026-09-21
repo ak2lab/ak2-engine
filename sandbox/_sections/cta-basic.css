@@ -1,0 +1,42 @@
+/* cta-basic — CTA セクション
+   ── 調整ポイント ── */
+.cta-basic {
+  --cta-basic-padding: 5rem 0;
+  --cta-basic-title-size: 2rem;
+  --cta-basic-btn-bg: var(--color-primary, #025DCC);
+  --cta-basic-btn-color: white;
+  --cta-basic-btn-radius: var(--radius-lg, 12px);
+
+  padding: var(--cta-basic-padding);
+}
+.cta-basic__inner {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.cta-basic__title {
+  font-size: var(--cta-basic-title-size);
+  font-weight: 700;
+  color: var(--color-dark, #1e293b);
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+}
+.cta-basic__text {
+  font-size: 1rem;
+  color: var(--color-text, #475569);
+  line-height: 2;
+  margin-bottom: 2.5rem;
+}
+.cta-basic__btn {
+  display: inline-block;
+  padding: 0.9rem 2.5rem;
+  background: var(--cta-basic-btn-bg);
+  color: var(--cta-basic-btn-color);
+  border-radius: var(--cta-basic-btn-radius);
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+.cta-basic__btn:hover {
+  opacity: 0.85;
+}

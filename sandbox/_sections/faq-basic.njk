@@ -1,0 +1,39 @@
+{# faq-basic — FAQ アコーディオン
+   ─────────────────────────────────────
+   YAML パラメータ:
+     heading     - セクション英語ラベル（省略でヘッダー非表示）
+     subheading  - セクション日本語見出し
+     style       - CSS変数の上書き
+     items[]     - Q&A データ配列
+       item.q    - 質問テキスト
+       item.a    - 回答テキスト（HTML可）
+
+   CSS 調整変数:
+     --faq-basic-padding     : セクション余白（default: 5rem 0）
+     --faq-basic-bg          : 背景色（default: #f8fafc）
+     --faq-basic-title-size  : 見出しサイズ（default: 1.8rem）
+     --faq-basic-label-color : ラベル色（default: #00C6FF）
+     --faq-basic-item-bg     : カード背景色（default: white）
+     --faq-basic-item-radius : カード角丸（default: 12px）
+   ───────────────────────────────────── #}
+<section class="faq-basic{% if section.extraClass %} {{ section.extraClass }}{% endif %}" style="{{ section.style }}">
+  <div class="container">
+    {% if section.heading %}
+    <div class="faq-basic__header">
+      <span class="faq-basic__label">{{ section.heading }}</span>
+      <h2 class="faq-basic__title">{{ section.subheading }}</h2>
+    </div>
+    {% endif %}
+    <div class="faq-basic__list">
+      {% for item in section.items %}
+      <details class="faq-basic__item">
+        <summary class="faq-basic__question">
+          {{ item.q }}
+          <span class="faq-basic__icon" aria-hidden="true">&#9660;</span>
+        </summary>
+        <div class="faq-basic__answer">{{ item.a | safe }}</div>
+      </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>

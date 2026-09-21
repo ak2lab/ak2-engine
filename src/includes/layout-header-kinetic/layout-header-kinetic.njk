@@ -1,0 +1,43 @@
+{# ================================================================
+   layout-header-kinetic.njk
+   キネティック風グローバルヘッダー
+   ================================================================
+   使い方（base.njk から include）:
+     {% include "layout-header-kinetic/layout-header-kinetic.njk" %}
+
+   必要なデータ（_data/site.json）:
+     site.logoSvg  : ロゴSVGのHTML文字列（| safe でレンダリング）
+     site.name     : サイト名テキスト
+     site.sub      : ブランドサブテキスト
+     site.logoHref : ロゴクリック先（省略時: "/"）
+
+   必要なデータ（_data/nav.json）:
+     nav : [{label, url, root}] の配列
+       root: アクティブ判定用パスプレフィックス（"/" はトップのみ）
+   ================================================================ #}
+<header class="site-header{% if transparentHeader %} is-transparent{% endif %}" id="site-header">
+  <div class="container site-header__inner">
+    <a href="{{ site.logoHref | default('/') }}" class="brand">
+      {{ site.logoSvg | safe }}
+      <span class="brand__text">
+        <span class="brand__name">{{ site.name }}</span>
+        <span class="brand__sub">{{ site.sub }}</span>
+      </span>
+    </a>
+
+    <nav class="site-nav" id="site-nav">
+      <ul class="nav-menu">
+        {% for item in nav %}
+          {% set isActive = (item.root == "/" and page.url == "/") or (item.root != "/" and page.url.startsWith(item.root)) %}
+          <li><a href="{{ item.url }}" class="nav-menu__link{% if isActive %} is-active{% endif %}">{{ item.label }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <button class="hamburger" id="mobile-menu-btn" aria-label="メニュー" aria-expanded="false">
+      <span class="hamburger__bar"></span>
+      <span class="hamburger__bar"></span>
+      <span class="hamburger__bar"></span>
+    </button>
+  </div>
+</header>

@@ -1,0 +1,14 @@
+{# test-recipe.njk — v2 アーキテクチャ テスト用レシピ #}
+<section class="test-recipe">
+  <div class="container">
+    <h2 class="test-recipe__title">{{ section.title | default("テストレシピ") }}</h2>
+    <p class="test-recipe__desc">{{ section.description | default("_sections/ からロードされたレシピです") }}</p>
+    {% if section.items %}
+    <ul class="test-recipe__list">
+      {% for item in section.items %}
+      <li class="test-recipe__item">{{ item }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+</section>
